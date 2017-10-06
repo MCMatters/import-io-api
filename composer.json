@@ -1,0 +1,31 @@
+{
+    "name": "mcmatters/import-io-api",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dmitry Borzyonok",
+            "email": "dima.matters@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "require-dev": {
+        "codeclimate/php-test-reporter": "^0.4.4",
+        "phpunit/phpunit": "^6.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "McMatters\\ImportIo\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "McMatters\\ImportIo\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
