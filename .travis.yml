@@ -4,15 +4,15 @@ php:
   - '7.0'
   - '7.1'
 
-#addons:
-#  code_climate:
-#    repo_token:
+addons:
+  code_climate:
+    repo_token: 1bd5e8a1762c6725a371e488f50abab79f2092beb93ecf10f1f59bf13175e2dd
 
 install: composer install --no-interaction --prefer-dist --no-suggest --ignore-platform-reqs --optimize-autoloader
 
 script: vendor/bin/phpunit
 
-#after_success: vendor/bin/test-reporter
+after_success: vendor/bin/test-reporter
 
 notifications:
   email:
