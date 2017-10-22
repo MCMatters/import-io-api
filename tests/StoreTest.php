@@ -100,6 +100,9 @@ class StoreTest extends TestCase
         $this->assertNotEmpty($data);
     }
 
+    /**
+     * Test "downloadUrlListFromExtractor" method.
+     */
     public function testDownloadUrlListFromExtractor()
     {
         $crawlRun = $this->getFirstCrawlRun($this->extractorId);
@@ -128,7 +131,7 @@ class StoreTest extends TestCase
 
         $crawlRuns = $this->importIo->store->searchCrawlRuns($extractorId, 1, 1);
 
-        if (!isset($crawlRuns['content']['hits']['hits'])) {
+        if (!isset($crawlRuns['hits']['hits'])) {
             throw new RuntimeException('There is no crawlRuns');
         }
 
