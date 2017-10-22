@@ -70,7 +70,7 @@ class Store extends Endpoint
      * @param string $attachmentId
      * @param string $type
      *
-     * @return array
+     * @return mixed
      * @throws ImportIoException
      * @throws InvalidArgumentException
      */
@@ -78,7 +78,7 @@ class Store extends Endpoint
         string $crawlRunId,
         string $attachmentId,
         string $type = 'json'
-    ): array {
+    ) {
         $this->checkCrawlRunId($crawlRunId);
         $this->checkAttachmentId($attachmentId);
         $this->checkDownloadType($type);
@@ -118,14 +118,14 @@ class Store extends Endpoint
      * @param string $extractorId
      * @param string $attachmentId
      *
-     * @return array
+     * @return mixed
      * @throws InvalidArgumentException
      * @throws ImportIoException
      */
     public function downloadUrlListFromExtractor(
         string $extractorId,
         string $attachmentId
-    ): array {
+    ) {
         $this->checkExtractorId($extractorId);
         $this->checkAttachmentId($attachmentId);
 
