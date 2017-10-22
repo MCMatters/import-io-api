@@ -21,9 +21,7 @@ class ScheduleTest extends TestCase
     {
         $data = $this->importIo->schedule->list();
 
-        $this->assertNotEmpty($data['content']);
-        $this->assertNotEmpty($data['headers']);
-        $this->assertSame(200, $data['code']);
+        $this->assertNotEmpty($data);
     }
 
     /**
