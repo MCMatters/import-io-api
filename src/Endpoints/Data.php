@@ -25,23 +25,21 @@ class Data extends Endpoint
      * @param string $extractorId
      * @param string $type
      *
-     * @return array
+     * @return array|string
      * @throws ImportIoException
      * @throws InvalidArgumentException
      */
     public function getLatestData(
         string $extractorId,
         string $type = 'json'
-    ): array {
+    ) {
         $this->checkExtractorId($extractorId);
         $this->checkType($type);
-
-        $accept = $type === 'json' ? 'jsonl' : 'csv';
 
         return $this->requestGet(
             "extractor/{$extractorId}/{$type}/latest",
             [],
-            $accept
+            $type === 'json' ? 'jsonl' : 'csv'
         );
     }
 

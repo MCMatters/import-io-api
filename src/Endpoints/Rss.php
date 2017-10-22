@@ -48,7 +48,7 @@ class Rss extends Endpoint
         $data = $this->getRuns($extractorId);
 
         try {
-            $items = ((array) $data['content']['channel'])['item'];
+            $items = ((array) $data['channel'])['item'];
         } catch (Throwable $e) {
             $items = [];
         }

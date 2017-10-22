@@ -48,14 +48,14 @@ abstract class Endpoint
      * @param array $options
      * @param string $accept
      *
-     * @return array
+     * @return mixed
      * @throws ImportIoException
      */
     protected function requestGet(
         string $uri,
         array $options = [],
         string $accept = 'json'
-    ): array {
+    ) {
         try {
             $request = $this->httpClient->get(
                 $uri,
@@ -64,11 +64,7 @@ abstract class Endpoint
 
             $content = $request->getBody()->getContents();
 
-            return [
-                'content' => $this->parseResponseContent($content, $accept),
-                'headers' => $request->getHeaders(),
-                'code'    => $request->getStatusCode(),
-            ];
+            return $this->parseResponseContent($content, $accept);
         } catch (Throwable $e) {
             throw new ImportIoException($this->getErrorMessage($e));
         }
@@ -80,7 +76,7 @@ abstract class Endpoint
      * @param array $options
      * @param string $accept
      *
-     * @return array
+     * @return mixed
      * @throws ImportIoException
      */
     protected function requestPost(
@@ -88,7 +84,7 @@ abstract class Endpoint
         $body = null,
         array $options = [],
         string $accept = 'json'
-    ): array {
+    ) {
         try {
             $request = $this->httpClient->post(
                 $uri,
@@ -97,11 +93,7 @@ abstract class Endpoint
 
             $content = $request->getBody()->getContents();
 
-            return [
-                'content' => $this->parseResponseContent($content, $accept),
-                'headers' => $request->getHeaders(),
-                'code'    => $request->getStatusCode(),
-            ];
+            return $this->parseResponseContent($content, $accept);
         } catch (Throwable $e) {
             throw new ImportIoException($this->getErrorMessage($e));
         }
@@ -113,7 +105,7 @@ abstract class Endpoint
      * @param array $options
      * @param string $accept
      *
-     * @return array
+     * @return mixed
      * @throws ImportIoException
      */
     protected function requestPut(
@@ -121,7 +113,7 @@ abstract class Endpoint
         $body = null,
         array $options = [],
         string $accept = 'json'
-    ): array {
+    ) {
         try {
             $request = $this->httpClient->put(
                 $uri,
@@ -130,11 +122,7 @@ abstract class Endpoint
 
             $content = $request->getBody()->getContents();
 
-            return [
-                'content' => $this->parseResponseContent($content, $accept),
-                'headers' => $request->getHeaders(),
-                'code'    => $request->getStatusCode(),
-            ];
+            return $this->parseResponseContent($content, $accept);
         } catch (Throwable $e) {
             throw new ImportIoException($this->getErrorMessage($e));
         }

@@ -32,7 +32,7 @@ class Run extends Endpoint
 
         $data = $this->requestPost("extractor/{$extractorId}/start");
 
-        return $data['content']['crawlRunId'] ?? '';
+        return $data['crawlRunId'] ?? '';
     }
 
     /**
@@ -48,6 +48,6 @@ class Run extends Endpoint
 
         $data = $this->requestPost("extractor/{$extractorId}/cancel");
 
-        return $data['content']['crawlRunId'] ?? '';
+        return $data['crawlRunId'] ?? '';
     }
 }

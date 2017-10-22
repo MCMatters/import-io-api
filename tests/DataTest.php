@@ -20,9 +20,7 @@ class DataTest extends TestCase
     {
         $data = $this->importIo->data->getLatestData($this->extractorId);
 
-        $this->assertNotEmpty($data['content']);
-        $this->assertNotEmpty($data['headers']);
-        $this->assertSame(200, $data['code']);
+        $this->assertNotEmpty($data);
     }
 
     /**
@@ -32,9 +30,7 @@ class DataTest extends TestCase
     {
         $data = $this->importIo->data->getLatestData($this->extractorId, 'csv');
 
-        $this->assertNotEmpty($data['content']);
-        $this->assertNotEmpty($data['headers']);
-        $this->assertSame(200, $data['code']);
+        $this->assertNotEmpty($data);
     }
 
     /**

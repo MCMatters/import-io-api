@@ -22,30 +22,22 @@ class StoreTest extends TestCase
         // Without query parameters.
         $data = $this->importIo->store->searchCrawlRuns();
 
-        $this->assertNotEmpty($data['content']);
-        $this->assertNotEmpty($data['headers']);
-        $this->assertSame(200, $data['code']);
+        $this->assertNotEmpty($data);
 
         // With extractorId parameter.
         $data = $this->importIo->store->searchCrawlRuns($this->extractorId);
 
-        $this->assertNotEmpty($data['content']);
-        $this->assertNotEmpty($data['headers']);
-        $this->assertSame(200, $data['code']);
+        $this->assertNotEmpty($data);
 
         // With page and perPage parameters.
         $data = $this->importIo->store->searchCrawlRuns(null, 1, 1);
 
-        $this->assertNotEmpty($data['content']);
-        $this->assertNotEmpty($data['headers']);
-        $this->assertSame(200, $data['code']);
+        $this->assertNotEmpty($data);
 
         // With everything except sortBy.
         $data = $this->importIo->store->searchCrawlRuns($this->extractorId, 1, 1);
 
-        $this->assertNotEmpty($data['content']);
-        $this->assertNotEmpty($data['headers']);
-        $this->assertSame(200, $data['code']);
+        $this->assertNotEmpty($data);
     }
 
     /**
@@ -57,10 +49,8 @@ class StoreTest extends TestCase
 
         $data = $this->importIo->store->getCrawlRunProgress($crawlRun['_id']);
 
-        $this->assertNotEmpty($data['content']);
-        $this->assertNotEmpty($data['headers']);
-        $this->assertSame(200, $data['code']);
-        $this->assertSame($crawlRun['_id'], $data['content']['guid']);
+        $this->assertNotEmpty($data);
+        $this->assertSame($crawlRun['_id'], $data['guid']);
     }
 
     /**
@@ -77,9 +67,7 @@ class StoreTest extends TestCase
                 $type
             );
 
-            $this->assertNotEmpty($data['content']);
-            $this->assertNotEmpty($data['headers']);
-            $this->assertSame(200, $data['code']);
+            $this->assertNotEmpty($data);
         }
     }
 
@@ -109,9 +97,7 @@ class StoreTest extends TestCase
             ['https://example.com', 'http://example.com']
         );
 
-        $this->assertNotEmpty($data['content']);
-        $this->assertNotEmpty($data['headers']);
-        $this->assertSame(200, $data['code']);
+        $this->assertNotEmpty($data);
     }
 
     public function testDownloadUrlListFromExtractor()
@@ -123,9 +109,7 @@ class StoreTest extends TestCase
             $crawlRun['fields']['urlListId']
         );
 
-        $this->assertNotEmpty($data['content']);
-        $this->assertNotEmpty($data['headers']);
-        $this->assertSame(200, $data['code']);
+        $this->assertNotEmpty($data);
     }
 
     /**
@@ -148,7 +132,7 @@ class StoreTest extends TestCase
             throw new RuntimeException('There is no crawlRuns');
         }
 
-        foreach ($crawlRuns['content']['hits']['hits'] as $hit) {
+        foreach ($crawlRuns['hits']['hits'] as $hit) {
             if ($hit['_type'] === 'CrawlRun') {
                 $crawlRun = $hit;
 

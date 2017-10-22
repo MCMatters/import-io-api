@@ -111,9 +111,7 @@ class Store extends Endpoint
             'plain'
         );
 
-        $data['content'] = json_decode($data['content'], true);
-
-        return $data;
+        return json_decode($data, true);
     }
 
     /**

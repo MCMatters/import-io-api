@@ -35,11 +35,9 @@ class ScheduleTest extends TestCase
 
         $data = $this->importIo->schedule->create($this->extractorId, $interval);
 
-        $this->assertNotEmpty($data['content']);
-        $this->assertNotEmpty($data['headers']);
-        $this->assertSame(201, $data['code']);
-        $this->assertSame($this->extractorId, $data['content']['extractorId']);
-        $this->assertSame($interval, $data['content']['interval']);
+        $this->assertNotEmpty($data);
+        $this->assertSame($this->extractorId, $data['extractorId']);
+        $this->assertSame($interval, $data['interval']);
     }
 
     /**
@@ -49,10 +47,8 @@ class ScheduleTest extends TestCase
     {
         $data = $this->importIo->schedule->getByExtractorId($this->extractorId);
 
-        $this->assertNotEmpty($data['content']);
-        $this->assertNotEmpty($data['headers']);
-        $this->assertSame(200, $data['code']);
-        $this->assertSame($this->extractorId, $data['content']['extractorId']);
+        $this->assertNotEmpty($data);
+        $this->assertSame($this->extractorId, $data['extractorId']);
     }
 
     /**
@@ -72,8 +68,8 @@ class ScheduleTest extends TestCase
         $this->importIo->schedule->create($this->extractorId, $interval);
         $data = $this->importIo->schedule->getByExtractorId($this->extractorId);
 
-        $this->assertSame($this->extractorId, $data['content']['extractorId']);
-        $this->assertSame($interval, $data['content']['interval']);
+        $this->assertSame($this->extractorId, $data['extractorId']);
+        $this->assertSame($interval, $data['interval']);
     }
 
     /**

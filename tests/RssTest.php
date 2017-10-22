@@ -18,9 +18,7 @@ class RssTest extends TestCase
     {
         $data = $this->importIo->rss->getRuns($this->extractorId);
 
-        $this->assertNotEmpty($data['content']);
-        $this->assertNotEmpty($data['headers']);
-        $this->assertSame(200, $data['code']);
+        $this->assertNotEmpty($data);
     }
 
     /**
