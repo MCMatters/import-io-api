@@ -7,7 +7,7 @@ namespace McMatters\ImportIo\Endpoints;
 use InvalidArgumentException;
 use McMatters\ImportIo\Exceptions\ImportIoException;
 use const null, true;
-use function array_filter, implode, in_array, json_decode;
+use function array_filter, array_merge, count, implode, in_array, json_decode;
 
 /**
  * Class Store
@@ -16,6 +16,10 @@ use function array_filter, implode, in_array, json_decode;
  */
 class Store extends Endpoint
 {
+    const STATE_PENDING = 'PENDING';
+    const STATE_FINISHED = 'FINISHED';
+    const STATE_FAILED = 'FAILED';
+
     /**
      * @var string
      */
@@ -134,6 +138,60 @@ class Store extends Endpoint
             [],
             'plain'
         );
+    }
+
+    /**
+     * @param string $extractorId
+     *
+     * @return array
+     * @throws ImportIoException
+     * @throws InvalidArgumentException
+     */
+    public function getAllCrawlRuns(string $extractorId): array
+    {
+        $page = 1;
+        $items = [];
+        $processed = 0;
+
+        do {
+            $content = $this->searchCrawlRuns($extractorId, $page, 100);
+
+            $items[] = $content['hits']['hits'];
+            $processed += count($content['hits']['hits']);
+            $page++;
+        } while ($content['hits']['total'] > $processed);
+
+        return array_merge([], ...$items);
+    }
+
+    /**
+     * @param string $extractorId
+     * @param bool $flatten
+     *
+     * @return array
+     * @throws ImportIoException
+     * @throws InvalidArgumentException
+     */
+    public function getAllDataFromCrawlRuns(
+        string $extractorId,
+        bool $flatten = true
+    ): array {
+        $crawlRuns = $this->getAllCrawlRuns($extractorId);
+
+        $data = [];
+
+        foreach ($crawlRuns as $crawlRun) {
+            if ($crawlRun['fields']['state'] !== self::STATE_FINISHED) {
+                continue;
+            }
+
+            $data[] = $this->downloadFileFromCrawlRun(
+                $crawlRun['_id'],
+                $crawlRun['fields']['json']
+            );
+        }
+
+        return $flatten ? array_merge([], ...$data) : $data;
     }
 
     /**
