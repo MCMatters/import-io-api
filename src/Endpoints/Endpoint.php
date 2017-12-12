@@ -289,6 +289,7 @@ abstract class Endpoint
             'json'  => 'application/json',
             'jsonl' => 'application/json',
             'xml'   => 'application/xml',
+            'zip'   => 'application/zip',
             'csv'   => 'text/csv',
             'plain' => 'text/plain',
         ];

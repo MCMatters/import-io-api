@@ -209,6 +209,9 @@ class Store extends Endpoint
             case 'sample':
                 return 'json';
 
+            case 'files':
+                return 'zip';
+
             case 'json':
             default:
                 return 'jsonl';
@@ -222,7 +225,7 @@ class Store extends Endpoint
      */
     protected function checkDownloadType(string $type = 'json')
     {
-        if (!in_array($type, ['json', 'csv', 'log', 'sample'], true)) {
+        if (!in_array($type, ['json', 'csv', 'log', 'sample', 'files'], true)) {
             throw new InvalidArgumentException('Incompatible type was passed');
         }
     }
