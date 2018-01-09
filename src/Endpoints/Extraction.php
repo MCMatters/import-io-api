@@ -6,6 +6,7 @@ namespace McMatters\ImportIo\Endpoints;
 
 use InvalidArgumentException;
 use McMatters\ImportIo\Exceptions\ImportIoException;
+use McMatters\ImportIo\Helpers\Validation;
 
 /**
  * Class Extraction
@@ -29,7 +30,7 @@ class Extraction extends Endpoint
      */
     public function extractorQuery(string $extractorId, string $url): array
     {
-        $this->checkExtractorId($extractorId);
+        Validation::checkExtractorId($extractorId);
 
         return $this->requestGet(
             "extractor/{$extractorId}",

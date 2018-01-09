@@ -6,6 +6,7 @@ namespace McMatters\ImportIo\Endpoints;
 
 use InvalidArgumentException;
 use McMatters\ImportIo\Exceptions\ImportIoException;
+use McMatters\ImportIo\Helpers\Validation;
 use Throwable;
 
 /**
@@ -29,7 +30,7 @@ class Rss extends Endpoint
      */
     public function getRuns(string $extractorId): array
     {
-        $this->checkExtractorId($extractorId);
+        Validation::checkExtractorId($extractorId);
 
         return $this->requestGet("extractor/{$extractorId}/runs", [], 'xml');
     }

@@ -6,6 +6,7 @@ namespace McMatters\ImportIo\Endpoints;
 
 use InvalidArgumentException;
 use McMatters\ImportIo\Exceptions\ImportIoException;
+use McMatters\ImportIo\Helpers\Validation;
 
 /**
  * Class Run
@@ -28,7 +29,7 @@ class Run extends Endpoint
      */
     public function startCrawl(string $extractorId): string
     {
-        $this->checkExtractorId($extractorId);
+        Validation::checkExtractorId($extractorId);
 
         $data = $this->requestPost("extractor/{$extractorId}/start");
 
@@ -44,7 +45,7 @@ class Run extends Endpoint
      */
     public function cancelCrawl(string $extractorId): string
     {
-        $this->checkExtractorId($extractorId);
+        Validation::checkExtractorId($extractorId);
 
         $data = $this->requestPost("extractor/{$extractorId}/cancel");
 

@@ -6,7 +6,8 @@ namespace McMatters\ImportIo\Endpoints;
 
 use InvalidArgumentException;
 use McMatters\ImportIo\Exceptions\ImportIoException;
-use function array_merge, preg_match;
+use McMatters\ImportIo\Helpers\Validation;
+use function array_merge;
 
 /**
  * Class Schedule
@@ -43,8 +44,8 @@ class Schedule extends Endpoint
         string $interval,
         array $additional = []
     ): array {
-        $this->checkExtractorId($extractorId);
-        $this->checkInterval($interval);
+        Validation::checkExtractorId($extractorId);
+        Validation::checkScheduleInterval($interval);
 
         $body = array_merge($additional, [
             'interval'    => $interval,
@@ -63,7 +64,7 @@ class Schedule extends Endpoint
      */
     public function getByExtractorId(string $extractorId): array
     {
-        $this->checkExtractorId($extractorId);
+        Validation::checkExtractorId($extractorId);
 
         return $this->requestGet("extractor/{$extractorId}");
     }
@@ -77,20 +78,8 @@ class Schedule extends Endpoint
      */
     public function delete(string $extractorId): int
     {
-        $this->checkExtractorId($extractorId);
+        Validation::checkExtractorId($extractorId);
 
         return $this->requestDelete("extractor/{$extractorId}");
-    }
-
-    /**
-     * @param string $interval
-     *
-     * @throws InvalidArgumentException
-     */
-    protected function checkInterval(string $interval)
-    {
-        if (!preg_match('/^[\s\d\*\/,-]+$/', $interval)) {
-            throw new InvalidArgumentException('Invalid interval was passed');
-        }
     }
 }

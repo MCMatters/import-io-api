@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace McMatters\ImportIo\Endpoints;
 
 use GuzzleHttp\Client;
-use InvalidArgumentException;
 use McMatters\ImportIo\Exceptions\ImportIoException;
 use Throwable;
 use const null, true;
@@ -163,12 +162,14 @@ abstract class Endpoint
                 return json_decode($content, true);
 
             case 'jsonl':
-                return $this->parseJsonL($content);
+                return $this->parseNdJson($content);
 
             case 'xml':
                 return (array) simplexml_load_string($content);
 
             case 'csv':
+            case 'xlsx':
+            case 'pdf':
             default:
                 return $content;
         }
@@ -179,7 +180,7 @@ abstract class Endpoint
      *
      * @return array
      */
-    protected function parseJsonL(string $response): array
+    protected function parseNdJson(string $response): array
     {
         $parsed = [];
         $lines = explode("\n", $response);
@@ -290,58 +291,12 @@ abstract class Endpoint
             'jsonl' => 'application/json',
             'xml'   => 'application/xml',
             'zip'   => 'application/zip',
+            'pdf'   => 'application/pdf',
+            'xlsx'  => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'csv'   => 'text/csv',
             'plain' => 'text/plain',
         ];
 
         return $types[$type] ?? "application/{$type}";
-    }
-
-    /**
-     * @param string $extractorId
-     *
-     * @throws InvalidArgumentException
-     */
-    protected function checkExtractorId(string $extractorId)
-    {
-        $this->checkUuid($extractorId, 'extractorId');
-    }
-
-    /**
-     * @param string $crawlRunId
-     *
-     * @throws InvalidArgumentException
-     */
-    protected function checkCrawlRunId(string $crawlRunId)
-    {
-        $this->checkUuid($crawlRunId, 'crawlRunId');
-    }
-
-    /**
-     * @param string $attachmentId
-     *
-     * @throws InvalidArgumentException
-     */
-    protected function checkAttachmentId(string $attachmentId)
-    {
-        $this->checkUuid($attachmentId, 'attachmentId');
-    }
-
-    /**
-     * @param string $uuid
-     * @param string $name
-     *
-     * @throws InvalidArgumentException
-     */
-    protected function checkUuid(string $uuid, string $name)
-    {
-        $check = preg_match(
-            '/^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$/',
-            $uuid
-        );
-
-        if (!$check) {
-            throw new InvalidArgumentException("Invalid {$name} was passed");
-        }
     }
 }

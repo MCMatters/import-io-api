@@ -4,9 +4,7 @@ declare(strict_types = 1);
 
 namespace McMatters\ImportIo;
 
-use McMatters\ImportIo\Endpoints\{
-    Data, Extraction, Rss, Run, Schedule, Store
-};
+use function strtolower, ucfirst;
 
 /**
  * Class ImportIo
@@ -16,34 +14,14 @@ use McMatters\ImportIo\Endpoints\{
 class ImportIo
 {
     /**
-     * @var Data
+     * @var string
      */
-    public $data;
+    protected $apiKey;
 
     /**
-     * @var Extraction
+     * @var array
      */
-    public $extraction;
-
-    /**
-     * @var Rss
-     */
-    public $rss;
-
-    /**
-     * @var Run
-     */
-    public $run;
-
-    /**
-     * @var Schedule
-     */
-    public $schedule;
-
-    /**
-     * @var Store
-     */
-    public $store;
+    protected $endpoints = [];
 
     /**
      * ImportIo constructor.
@@ -52,11 +30,24 @@ class ImportIo
      */
     public function __construct(string $apiKey)
     {
-        $this->data = new Data($apiKey);
-        $this->extraction = new Extraction($apiKey);
-        $this->rss = new Rss($apiKey);
-        $this->run = new Run($apiKey);
-        $this->schedule = new Schedule($apiKey);
-        $this->store = new Store($apiKey);
+        $this->apiKey = $apiKey;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return mixed
+     */
+    public function endpoint(string $name)
+    {
+        $name = strtolower($name);
+
+        if (!isset($this->endpoints[$name])) {
+            $class = __NAMESPACE__.'\\Endpoints\\'.ucfirst($name);
+
+            $this->endpoints[$name] = new $class($this->apiKey);
+        }
+
+        return $this->endpoints[$name];
     }
 }

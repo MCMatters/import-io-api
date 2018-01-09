@@ -6,8 +6,7 @@ namespace McMatters\ImportIo\Endpoints;
 
 use InvalidArgumentException;
 use McMatters\ImportIo\Exceptions\ImportIoException;
-use const true;
-use function in_array;
+use McMatters\ImportIo\Helpers\Validation;
 
 /**
  * Class Data
@@ -33,25 +32,13 @@ class Data extends Endpoint
         string $extractorId,
         string $type = 'json'
     ) {
-        $this->checkExtractorId($extractorId);
-        $this->checkType($type);
+        Validation::checkExtractorId($extractorId);
+        Validation::checkDataType($type);
 
         return $this->requestGet(
             "extractor/{$extractorId}/{$type}/latest",
             [],
             $type === 'json' ? 'jsonl' : 'csv'
         );
-    }
-
-    /**
-     * @param string $type
-     *
-     * @throws InvalidArgumentException
-     */
-    protected function checkType(string $type)
-    {
-        if (!in_array($type, ['json', 'csv'], true)) {
-            throw new InvalidArgumentException('Allowed types are only json and csv');
-        }
     }
 }

@@ -6,8 +6,9 @@ namespace McMatters\ImportIo\Endpoints;
 
 use InvalidArgumentException;
 use McMatters\ImportIo\Exceptions\ImportIoException;
+use McMatters\ImportIo\Helpers\Validation;
 use const null, true;
-use function array_filter, array_merge, count, implode, in_array, json_decode;
+use function array_filter, array_merge, count, implode, json_decode;
 
 /**
  * Class Store
@@ -42,7 +43,7 @@ class Store extends Endpoint
         string $sortBy = null
     ): array {
         if (null !== $extractorId) {
-            $this->checkExtractorId($extractorId);
+            Validation::checkExtractorId($extractorId);
         }
 
         $query = array_filter([
@@ -56,6 +57,20 @@ class Store extends Endpoint
     }
 
     /**
+     * @param string $extractorId
+     *
+     * @return array
+     * @throws ImportIoException
+     * @throws InvalidArgumentException
+     */
+    public function getExtractorInfo(string $extractorId): array
+    {
+        Validation::checkExtractorId($extractorId);
+
+        return $this->requestGet("store/extractor/{$extractorId}");
+    }
+
+    /**
      * @param string $crawlRunId
      *
      * @return array
@@ -64,7 +79,7 @@ class Store extends Endpoint
      */
     public function getCrawlRunProgress(string $crawlRunId): array
     {
-        $this->checkCrawlRunId($crawlRunId);
+        Validation::checkCrawlRunId($crawlRunId);
 
         return $this->requestGet("crawlrun/{$crawlRunId}");
     }
@@ -78,14 +93,14 @@ class Store extends Endpoint
      * @throws ImportIoException
      * @throws InvalidArgumentException
      */
-    public function downloadFileFromCrawlRun(
+    public function downloadFileForCrawlRun(
         string $crawlRunId,
         string $attachmentId,
         string $type = 'json'
     ) {
-        $this->checkCrawlRunId($crawlRunId);
-        $this->checkAttachmentId($attachmentId);
-        $this->checkDownloadType($type);
+        Validation::checkCrawlRunId($crawlRunId);
+        Validation::checkAttachmentId($attachmentId);
+        Validation::checkDownloadableCrawlRunType($type);
 
         return $this->requestGet(
             "crawlRun/{$crawlRunId}/_attachment/{$type}/{$attachmentId}",
@@ -106,7 +121,7 @@ class Store extends Endpoint
         string $extractorId,
         array $urlList
     ): array {
-        $this->checkExtractorId($extractorId);
+        Validation::checkExtractorId($extractorId);
 
         $data = $this->requestPut(
             "extractor/{$extractorId}/_attachment/urlList",
@@ -130,8 +145,8 @@ class Store extends Endpoint
         string $extractorId,
         string $attachmentId
     ) {
-        $this->checkExtractorId($extractorId);
-        $this->checkAttachmentId($attachmentId);
+        Validation::checkExtractorId($extractorId);
+        Validation::checkAttachmentId($attachmentId);
 
         return $this->requestGet(
             "extractor/{$extractorId}/_attachment/urlList/{$attachmentId}",
@@ -185,13 +200,96 @@ class Store extends Endpoint
                 continue;
             }
 
-            $data[] = $this->downloadFileFromCrawlRun(
+            $data[] = $this->downloadFileForCrawlRun(
                 $crawlRun['_id'],
                 $crawlRun['fields']['json']
             );
         }
 
         return $flatten ? array_merge([], ...$data) : $data;
+    }
+
+    /**
+     * @param string $reportId
+     *
+     * @return array
+     * @throws ImportIoException
+     * @throws InvalidArgumentException
+     */
+    public function getReport(string $reportId): array
+    {
+        Validation::checkReportId($reportId);
+
+        return $this->requestGet("report/{$reportId}");
+    }
+
+    /**
+     * @param string|null $reportId
+     * @param int|null $page
+     * @param int|null $perPage
+     * @param string|null $sortBy
+     *
+     * @return array
+     * @throws ImportIoException
+     * @throws InvalidArgumentException
+     */
+    public function searchReportRuns(
+        string $reportId = null,
+        int $page = null,
+        int $perPage = null,
+        string $sortBy = null
+    ): array {
+        if (null !== $reportId) {
+            Validation::checkReportId($reportId);
+        }
+
+        $query = array_filter([
+            'reportId' => $reportId,
+            '_page'    => $page,
+            '_perpage' => $perPage,
+            '_sort'    => $sortBy,
+        ]);
+
+        return $this->requestGet('reportRun/_search', ['query' => $query]);
+    }
+
+    /**
+     * @param string $reportRunId
+     *
+     * @return array
+     * @throws InvalidArgumentException
+     * @throws ImportIoException
+     */
+    public function getReportRun(string $reportRunId): array
+    {
+        Validation::checkReportRunId($reportRunId);
+
+        return $this->requestGet("reportRun/{$reportRunId}");
+    }
+
+    /**
+     * @param string $reportRunId
+     * @param string $attachmentId
+     * @param string $type
+     *
+     * @return mixed
+     * @throws ImportIoException
+     * @throws InvalidArgumentException
+     */
+    public function downloadFileForReportRun(
+        string $reportRunId,
+        string $attachmentId,
+        string $type = 'json'
+    ) {
+        Validation::checkReportRunId($reportRunId);
+        Validation::checkAttachmentId($attachmentId);
+        Validation::checkDownloadableReportRunType($type);
+
+        return $this->requestGet(
+            "reportRun/{$reportRunId}/_attachment/csv/{$attachmentId}",
+            [],
+            'plain'
+        );
     }
 
     /**
@@ -212,21 +310,15 @@ class Store extends Endpoint
             case 'files':
                 return 'zip';
 
+            case 'pdf':
+                return 'pdf';
+
+            case 'xlsx':
+                return 'xslx';
+
             case 'json':
             default:
                 return 'jsonl';
-        }
-    }
-
-    /**
-     * @param string $type
-     *
-     * @throws InvalidArgumentException
-     */
-    protected function checkDownloadType(string $type = 'json')
-    {
-        if (!in_array($type, ['json', 'csv', 'log', 'sample', 'files'], true)) {
-            throw new InvalidArgumentException('Incompatible type was passed');
         }
     }
 }
