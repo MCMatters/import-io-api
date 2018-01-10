@@ -18,7 +18,7 @@ class DataTest extends TestCase
      */
     public function testGetLatestDataJson()
     {
-        $data = $this->importIo->data->getLatestData($this->extractorId);
+        $data = $this->client->endpoint('data')->getLatestData($this->extractorId);
 
         $this->assertNotEmpty($data);
     }
@@ -28,7 +28,7 @@ class DataTest extends TestCase
      */
     public function testGetLatestDataCsv()
     {
-        $data = $this->importIo->data->getLatestData($this->extractorId, 'csv');
+        $data = $this->client->endpoint('data')->getLatestData($this->extractorId, 'csv');
 
         $this->assertNotEmpty($data);
     }
@@ -40,7 +40,7 @@ class DataTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        $this->importIo->data->getLatestData($this->extractorId, 'xls');
+        $this->client->endpoint('data')->getLatestData($this->extractorId, 'xls');
     }
 
     /**
@@ -50,6 +50,6 @@ class DataTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
 
-        $this->importIo->data->getLatestData(md5(random_bytes(12)));
+        $this->client->endpoint('data')->getLatestData(md5(random_bytes(12)));
     }
 }

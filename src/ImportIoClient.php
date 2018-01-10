@@ -7,11 +7,11 @@ namespace McMatters\ImportIo;
 use function strtolower, ucfirst;
 
 /**
- * Class ImportIo
+ * Class ImportIoClient
  *
  * @package McMatters\ImportIo
  */
-class ImportIo
+class ImportIoClient
 {
     /**
      * @var string

@@ -16,7 +16,7 @@ class RssTest extends TestCase
      */
     public function testGetRuns()
     {
-        $data = $this->importIo->rss->getRuns($this->extractorId);
+        $data = $this->client->endpoint('rss')->getRuns($this->extractorId);
 
         $this->assertNotEmpty($data);
     }
@@ -26,7 +26,7 @@ class RssTest extends TestCase
      */
     public function testGetRunsGuids()
     {
-        $data = $this->importIo->rss->getRunsGuids($this->extractorId);
+        $data = $this->client->endpoint('rss')->getRunsGuids($this->extractorId);
 
         $this->assertTrue(is_array($data));
     }

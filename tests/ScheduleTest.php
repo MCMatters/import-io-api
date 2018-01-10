@@ -19,7 +19,7 @@ class ScheduleTest extends TestCase
      */
     public function testList()
     {
-        $data = $this->importIo->schedule->list();
+        $data = $this->client->endpoint('schedule')->list();
 
         $this->assertNotEmpty($data);
     }
@@ -31,7 +31,7 @@ class ScheduleTest extends TestCase
     {
         $interval = '15 * * * *';
 
-        $data = $this->importIo->schedule->create($this->extractorId, $interval);
+        $data = $this->client->endpoint('schedule')->create($this->extractorId, $interval);
 
         $this->assertNotEmpty($data);
         $this->assertSame($this->extractorId, $data['extractorId']);
@@ -43,7 +43,7 @@ class ScheduleTest extends TestCase
      */
     public function testGetByExtractorId()
     {
-        $data = $this->importIo->schedule->getByExtractorId($this->extractorId);
+        $data = $this->client->endpoint('schedule')->getByExtractorId($this->extractorId);
 
         $this->assertNotEmpty($data);
         $this->assertSame($this->extractorId, $data['extractorId']);
@@ -56,15 +56,15 @@ class ScheduleTest extends TestCase
     {
         // Remove schedule before.
         try {
-            $this->importIo->schedule->delete($this->extractorId);
+            $this->client->endpoint('schedule')->delete($this->extractorId);
         } catch (Throwable $e) {
             //
         }
 
         $interval = '15 * * * *';
 
-        $this->importIo->schedule->create($this->extractorId, $interval);
-        $data = $this->importIo->schedule->getByExtractorId($this->extractorId);
+        $this->client->endpoint('schedule')->create($this->extractorId, $interval);
+        $data = $this->client->endpoint('schedule')->getByExtractorId($this->extractorId);
 
         $this->assertSame($this->extractorId, $data['extractorId']);
         $this->assertSame($interval, $data['interval']);
@@ -75,7 +75,7 @@ class ScheduleTest extends TestCase
      */
     public function testDelete()
     {
-        $code = $this->importIo->schedule->delete($this->extractorId);
+        $code = $this->client->endpoint('schedule')->delete($this->extractorId);
 
         $this->assertSame(200, $code);
     }
@@ -87,7 +87,7 @@ class ScheduleTest extends TestCase
     {
         $this->expectException(ImportIoException::class);
 
-        $this->importIo->schedule->delete($this->extractorId);
-        $this->importIo->schedule->delete($this->extractorId);
+        $this->client->endpoint('schedule')->delete($this->extractorId);
+        $this->client->endpoint('schedule')->delete($this->extractorId);
     }
 }

@@ -16,7 +16,7 @@ class ExtractionTest extends TestCase
      */
     public function testExtractorQuery()
     {
-        $data = $this->importIo->extraction->extractorQuery(
+        $data = $this->client->endpoint('extraction')->extractorQuery(
             $this->extractorId,
             'https://example.com'
         );

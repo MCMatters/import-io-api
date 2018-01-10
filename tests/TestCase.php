@@ -4,7 +4,8 @@ declare(strict_types = 1);
 
 namespace McMatters\ImportIo\Tests;
 
-use McMatters\ImportIo\ImportIo;
+use McMatters\ImportIo\Endpoints\Endpoint;
+use McMatters\ImportIo\ImportIoClient;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
 /**
@@ -15,9 +16,9 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 class TestCase extends BaseTestCase
 {
     /**
-     * @var ImportIo
+     * @var ImportIoClient
      */
-    protected $importIo;
+    protected $client;
 
     /**
      * @var string
@@ -35,7 +36,7 @@ class TestCase extends BaseTestCase
     {
         parent::__construct($name, $data, $dataName);
 
-        $this->importIo = new ImportIo(getenv('IMPORT_IO_API_KEY'));
+        $this->client = new ImportIoClient(getenv('IMPORT_IO_API_KEY'));
         $this->extractorId = getenv('IMPORT_IO_TEST_EXTRACTOR_ID');
     }
 }

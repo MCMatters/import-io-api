@@ -20,7 +20,7 @@ class RunTest extends TestCase
     public function __destruct()
     {
         try {
-            $this->importIo->run->cancelCrawl($this->extractorId);
+            $this->client->endpoint('run')->cancelCrawl($this->extractorId);
         } catch (Throwable $e) {
             // There is no ran crawl.
         }
@@ -31,8 +31,8 @@ class RunTest extends TestCase
      */
     public function testStartAndCancelCrawl()
     {
-        $startCrawlId = $this->importIo->run->startCrawl($this->extractorId);
-        $cancelCrawlId = $this->importIo->run->cancelCrawl($this->extractorId);
+        $startCrawlId = $this->client->endpoint('run')->startCrawl($this->extractorId);
+        $cancelCrawlId = $this->client->endpoint('run')->cancelCrawl($this->extractorId);
 
         $this->assertNotEmpty($startCrawlId);
         $this->assertNotEmpty($cancelCrawlId);
@@ -46,9 +46,9 @@ class RunTest extends TestCase
     {
         $this->expectException(ImportIoException::class);
 
-        $this->importIo->run->startCrawl($this->extractorId);
-        $this->importIo->run->startCrawl($this->extractorId);
-        $this->importIo->run->cancelCrawl($this->extractorId);
+        $this->client->endpoint('run')->startCrawl($this->extractorId);
+        $this->client->endpoint('run')->startCrawl($this->extractorId);
+        $this->client->endpoint('run')->cancelCrawl($this->extractorId);
     }
 
     /**
@@ -58,7 +58,7 @@ class RunTest extends TestCase
     {
         $this->expectException(ImportIoException::class);
 
-        $this->importIo->run->cancelCrawl($this->extractorId);
-        $this->importIo->run->cancelCrawl($this->extractorId);
+        $this->client->endpoint('run')->cancelCrawl($this->extractorId);
+        $this->client->endpoint('run')->cancelCrawl($this->extractorId);
     }
 }

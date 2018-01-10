@@ -20,22 +20,22 @@ class StoreTest extends TestCase
     public function testSearchCrawlRuns()
     {
         // Without query parameters.
-        $data = $this->importIo->store->searchCrawlRuns();
+        $data = $this->client->endpoint('store')->searchCrawlRuns();
 
         $this->assertNotEmpty($data);
 
         // With extractorId parameter.
-        $data = $this->importIo->store->searchCrawlRuns($this->extractorId);
+        $data = $this->client->endpoint('store')->searchCrawlRuns($this->extractorId);
 
         $this->assertNotEmpty($data);
 
         // With page and perPage parameters.
-        $data = $this->importIo->store->searchCrawlRuns(null, 1, 1);
+        $data = $this->client->endpoint('store')->searchCrawlRuns(null, 1, 1);
 
         $this->assertNotEmpty($data);
 
         // With everything except sortBy.
-        $data = $this->importIo->store->searchCrawlRuns($this->extractorId, 1, 1);
+        $data = $this->client->endpoint('store')->searchCrawlRuns($this->extractorId, 1, 1);
 
         $this->assertNotEmpty($data);
     }
@@ -47,21 +47,21 @@ class StoreTest extends TestCase
     {
         $crawlRun = $this->getFirstCrawlRun();
 
-        $data = $this->importIo->store->getCrawlRunProgress($crawlRun['_id']);
+        $data = $this->client->endpoint('store')->getCrawlRunProgress($crawlRun['_id']);
 
         $this->assertNotEmpty($data);
         $this->assertSame($crawlRun['_id'], $data['guid']);
     }
 
     /**
-     * Test "downloadFileFromCrawlRun" method with all types.
+     * Test "downloadFileForCrawlRun" method with all types.
      */
-    public function testDownloadFileFromCrawlRun()
+    public function testDownloadFileForCrawlRun()
     {
         $crawlRun = $this->getFirstCrawlRun();
 
         foreach (['json', 'csv', 'sample', 'log'] as $type) {
-            $data = $this->importIo->store->downloadFileFromCrawlRun(
+            $data = $this->client->endpoint('store')->downloadFileForCrawlRun(
                 $crawlRun['_id'],
                 $crawlRun['fields'][$type],
                 $type
@@ -80,7 +80,7 @@ class StoreTest extends TestCase
 
         $crawlRun = $this->getFirstCrawlRun();
 
-        $this->importIo->store->downloadFileFromCrawlRun(
+        $this->client->endpoint('store')->downloadFileForCrawlRun(
             $crawlRun['_id'],
             $crawlRun['fields']['json'],
             'html'
@@ -92,7 +92,7 @@ class StoreTest extends TestCase
      */
     public function testUploadUrlListForExtractor()
     {
-        $data = $this->importIo->store->uploadUrlListForExtractor(
+        $data = $this->client->endpoint('store')->uploadUrlListForExtractor(
             $this->extractorId,
             ['https://example.com', 'http://example.com']
         );
@@ -107,7 +107,7 @@ class StoreTest extends TestCase
     {
         $crawlRun = $this->getFirstCrawlRun($this->extractorId);
 
-        $data = $this->importIo->store->downloadUrlListFromExtractor(
+        $data = $this->client->endpoint('store')->downloadUrlListFromExtractor(
             $this->extractorId,
             $crawlRun['fields']['urlListId']
         );
@@ -129,7 +129,7 @@ class StoreTest extends TestCase
             return $crawlRun;
         }
 
-        $crawlRuns = $this->importIo->store->searchCrawlRuns($extractorId, 1, 1);
+        $crawlRuns = $this->client->endpoint('store')->searchCrawlRuns($extractorId, 1, 1);
 
         if (!isset($crawlRuns['hits']['hits'])) {
             throw new RuntimeException('There is no crawlRuns');
