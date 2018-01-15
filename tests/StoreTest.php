@@ -34,7 +34,7 @@ class StoreTest extends TestCase
         // With page and perPage parameters.
         $data = $this->client->endpoint('store')->searchCrawlRuns(
             null,
-            ['_page' => 1, '_perPage' => 1]
+            ['_page' => 1, '_perpage' => 1]
         );
 
         $this->assertNotEmpty($data);
@@ -42,7 +42,7 @@ class StoreTest extends TestCase
         // With everything except sortBy.
         $data = $this->client->endpoint('store')->searchCrawlRuns(
             $this->extractorId,
-            ['_page' => 1, '_perPage' => 1]
+            ['_page' => 1, '_perpage' => 1]
         );
 
         $this->assertNotEmpty($data);
@@ -148,23 +148,12 @@ class StoreTest extends TestCase
             return $crawlRun;
         }
 
-        $crawlRuns = $this->client->endpoint('store')->searchCrawlRuns(
-            $extractorId,
-            ['_page' => 1, '_perPage' => 1]
-        );
+        $crawlRun = $this->client->endpoint('store')->getFirstCrawlRun($extractorId);
 
-        if (!isset($crawlRuns['hits']['hits'])) {
+        if (empty($crawlRun)) {
             throw new RuntimeException('There is no crawlRuns');
         }
 
-        foreach ($crawlRuns['hits']['hits'] as $hit) {
-            if ($hit['_type'] === 'CrawlRun') {
-                $crawlRun = $hit;
-
-                return $hit;
-            }
-        }
-
-        throw new RuntimeException('There is no crawlRuns');
+        return $crawlRun;
     }
 }

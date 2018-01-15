@@ -48,6 +48,54 @@ class Store extends Endpoint
     }
 
     /**
+     * @param string|null $extractorId
+     * @param array $filters
+     *
+     * @return array
+     * @throws ImportIoException
+     * @throws InvalidArgumentException
+     */
+    public function getFirstCrawlRun(
+        string $extractorId = null,
+        array $filters = []
+    ): array {
+        $crawlRuns = $this->searchCrawlRuns(
+            $extractorId,
+            ['_page' => 1, '_perpage' => 1] + $filters
+        );
+
+        if (empty($crawlRuns['hits']['hits'])) {
+            return [];
+        }
+
+        foreach ($crawlRuns['hits']['hits'] as $hit) {
+            if ($hit['_type'] === 'CrawlRun') {
+                return $hit;
+            }
+        }
+
+        return [];
+    }
+
+    /**
+     * @param string|null $extractorId
+     *
+     * @return array
+     * @throws ImportIoException
+     * @throws InvalidArgumentException
+     */
+    public function getLastFinishedCrawlRun(string $extractorId = null): array
+    {
+        return $this->getFirstCrawlRun(
+            $extractorId,
+            [
+                '_sort' => '_meta.creationTimestamp',
+                'state' => self::STATE_FINISHED,
+            ]
+        );
+    }
+
+    /**
      * @param string $extractorId
      *
      * @return array
@@ -162,7 +210,7 @@ class Store extends Endpoint
         do {
             $content = $this->searchCrawlRuns(
                 $extractorId,
-                ['_page' => $page, '_perPage' => 100]
+                ['_page' => $page, '_perpage' => 100]
             );
 
             $items[] = $content['hits']['hits'];
