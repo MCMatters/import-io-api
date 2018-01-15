@@ -160,7 +160,10 @@ class Store extends Endpoint
         $processed = 0;
 
         do {
-            $content = $this->searchCrawlRuns($extractorId, $page, 100);
+            $content = $this->searchCrawlRuns(
+                $extractorId,
+                ['_page' => $page, '_perPage' => 100]
+            );
 
             $items[] = $content['hits']['hits'];
             $processed += count($content['hits']['hits']);

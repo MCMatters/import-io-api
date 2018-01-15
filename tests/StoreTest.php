@@ -148,7 +148,10 @@ class StoreTest extends TestCase
             return $crawlRun;
         }
 
-        $crawlRuns = $this->client->endpoint('store')->searchCrawlRuns($extractorId, 1, 1);
+        $crawlRuns = $this->client->endpoint('store')->searchCrawlRuns(
+            $extractorId,
+            ['_page' => 1, '_perPage' => 1]
+        );
 
         if (!isset($crawlRuns['hits']['hits'])) {
             throw new RuntimeException('There is no crawlRuns');
