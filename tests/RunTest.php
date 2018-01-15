@@ -28,6 +28,8 @@ class RunTest extends TestCase
 
     /**
      * Test "startCrawl" method.
+     *
+     * @throws \PHPUnit\Framework\AssertionFailedError
      */
     public function testStartAndCancelCrawl()
     {
@@ -41,6 +43,8 @@ class RunTest extends TestCase
 
     /**
      * Test "startCrawl" method with getting exception.
+     *
+     * @throws \PHPUnit\Framework\Exception
      */
     public function testStartCrawlException()
     {
@@ -53,6 +57,8 @@ class RunTest extends TestCase
 
     /**
      * Test "cancelCrawl" method with getting exception.
+     *
+     * @throws \PHPUnit\Framework\Exception
      */
     public function testCancelCrawlException()
     {

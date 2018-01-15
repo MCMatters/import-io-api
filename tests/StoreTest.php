@@ -16,6 +16,8 @@ class StoreTest extends TestCase
 {
     /**
      * Test "searchCrawlRuns" method.
+     *
+     * @throws \PHPUnit\Framework\AssertionFailedError
      */
     public function testSearchCrawlRuns()
     {
@@ -30,18 +32,26 @@ class StoreTest extends TestCase
         $this->assertNotEmpty($data);
 
         // With page and perPage parameters.
-        $data = $this->client->endpoint('store')->searchCrawlRuns(null, 1, 1);
+        $data = $this->client->endpoint('store')->searchCrawlRuns(
+            null,
+            ['_page' => 1, '_perPage' => 1]
+        );
 
         $this->assertNotEmpty($data);
 
         // With everything except sortBy.
-        $data = $this->client->endpoint('store')->searchCrawlRuns($this->extractorId, 1, 1);
+        $data = $this->client->endpoint('store')->searchCrawlRuns(
+            $this->extractorId,
+            ['_page' => 1, '_perPage' => 1]
+        );
 
         $this->assertNotEmpty($data);
     }
 
     /**
      * Test "getCrawlRunProgress" method.
+     *
+     * @throws RuntimeException
      */
     public function testGetCrawlRunProgress()
     {
@@ -55,6 +65,8 @@ class StoreTest extends TestCase
 
     /**
      * Test "downloadFileForCrawlRun" method with all types.
+     *
+     * @throws RuntimeException
      */
     public function testDownloadFileForCrawlRun()
     {
@@ -73,6 +85,9 @@ class StoreTest extends TestCase
 
     /**
      * Test "downloadFileFromCrawlRun" with exception.
+     *
+     * @throws \PHPUnit\Framework\Exception
+     * @throws RuntimeException
      */
     public function testDownloadFileFromCrawlRunWithException()
     {
@@ -89,6 +104,8 @@ class StoreTest extends TestCase
 
     /**
      * Test "uploadUrlListForExtractor" method.
+     *
+     * @throws \PHPUnit\Framework\AssertionFailedError
      */
     public function testUploadUrlListForExtractor()
     {
@@ -102,6 +119,8 @@ class StoreTest extends TestCase
 
     /**
      * Test "downloadUrlListFromExtractor" method.
+     *
+     * @throws RuntimeException
      */
     public function testDownloadUrlListFromExtractor()
     {

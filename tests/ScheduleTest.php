@@ -16,6 +16,8 @@ class ScheduleTest extends TestCase
 {
     /**
      * Test "list" method.
+     *
+     * @throws \PHPUnit\Framework\AssertionFailedError
      */
     public function testList()
     {
@@ -26,6 +28,8 @@ class ScheduleTest extends TestCase
 
     /**
      * Test "create" method.
+     *
+     * @throws \PHPUnit\Framework\AssertionFailedError
      */
     public function testCreate()
     {
@@ -40,6 +44,8 @@ class ScheduleTest extends TestCase
 
     /**
      * Test "getByExtractorId" method.
+     *
+     * @throws \PHPUnit\Framework\AssertionFailedError
      */
     public function testGetByExtractorId()
     {
@@ -82,6 +88,8 @@ class ScheduleTest extends TestCase
 
     /**
      * Test "delete" method with getting exception.
+     *
+     * @throws \PHPUnit\Framework\Exception
      */
     public function testDeleteWithException()
     {

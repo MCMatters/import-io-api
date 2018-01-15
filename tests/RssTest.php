@@ -13,6 +13,8 @@ class RssTest extends TestCase
 {
     /**
      * Test "getRuns" method.
+     *
+     * @throws \PHPUnit\Framework\AssertionFailedError
      */
     public function testGetRuns()
     {
@@ -23,6 +25,8 @@ class RssTest extends TestCase
 
     /**
      * Test "getRunsGuids" method.
+     *
+     * @throws \PHPUnit\Framework\AssertionFailedError
      */
     public function testGetRunsGuids()
     {

@@ -13,6 +13,8 @@ class ExtractionTest extends TestCase
 {
     /**
      * Test "extractorQuery" method.
+     *
+     * @throws \PHPUnit\Framework\AssertionFailedError
      */
     public function testExtractorQuery()
     {

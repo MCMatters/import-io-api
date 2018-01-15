@@ -28,9 +28,7 @@ class Store extends Endpoint
 
     /**
      * @param string|null $extractorId
-     * @param int|null $page
-     * @param int|null $perPage
-     * @param string|null $sortBy
+     * @param array $filters
      *
      * @return array
      * @throws ImportIoException
@@ -38,20 +36,13 @@ class Store extends Endpoint
      */
     public function searchCrawlRuns(
         string $extractorId = null,
-        int $page = null,
-        int $perPage = null,
-        string $sortBy = null
+        array $filters = []
     ): array {
         if (null !== $extractorId) {
             Validation::checkExtractorId($extractorId);
         }
 
-        $query = array_filter([
-            'extractorId' => $extractorId,
-            '_page'       => $page,
-            '_perpage'    => $perPage,
-            '_sort'       => $sortBy,
-        ]);
+        $query = array_filter(['extractorId' => $extractorId] + $filters);
 
         return $this->requestGet('crawlrun/_search', ['query' => $query]);
     }
@@ -225,9 +216,7 @@ class Store extends Endpoint
 
     /**
      * @param string|null $reportId
-     * @param int|null $page
-     * @param int|null $perPage
-     * @param string|null $sortBy
+     * @param array $filters
      *
      * @return array
      * @throws ImportIoException
@@ -235,20 +224,13 @@ class Store extends Endpoint
      */
     public function searchReportRuns(
         string $reportId = null,
-        int $page = null,
-        int $perPage = null,
-        string $sortBy = null
+        array $filters = []
     ): array {
         if (null !== $reportId) {
             Validation::checkReportId($reportId);
         }
 
-        $query = array_filter([
-            'reportId' => $reportId,
-            '_page'    => $page,
-            '_perpage' => $perPage,
-            '_sort'    => $sortBy,
-        ]);
+        $query = array_filter(['reportId' => $reportId] + $filters);
 
         return $this->requestGet('reportRun/_search', ['query' => $query]);
     }

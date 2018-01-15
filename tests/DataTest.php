@@ -15,6 +15,8 @@ class DataTest extends TestCase
 {
     /**
      * Test "getLatestData" method with getting json.
+     *
+     * @throws \PHPUnit\Framework\AssertionFailedError
      */
     public function testGetLatestDataJson()
     {
@@ -25,6 +27,8 @@ class DataTest extends TestCase
 
     /**
      * Test "getLatestData" method with getting csv string.
+     *
+     * @throws \PHPUnit\Framework\AssertionFailedError
      */
     public function testGetLatestDataCsv()
     {
@@ -35,6 +39,8 @@ class DataTest extends TestCase
 
     /**
      * Test "getLatestData" method with getting exception.
+     *
+     * @throws \PHPUnit\Framework\Exception
      */
     public function testGetLatestDataWithWrongType()
     {
@@ -45,6 +51,9 @@ class DataTest extends TestCase
 
     /**
      * Test "getLatestData" method with getting exception.
+     *
+     * @throws \PHPUnit\Framework\Exception
+     * @throws \Exception
      */
     public function testGetLatestDataWithWrongExtractorId()
     {

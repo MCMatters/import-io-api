@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace McMatters\ImportIo\Tests;
 
-use McMatters\ImportIo\Endpoints\Endpoint;
 use McMatters\ImportIo\ImportIoClient;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
