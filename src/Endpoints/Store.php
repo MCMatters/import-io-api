@@ -21,6 +21,11 @@ class Store extends Endpoint
     const STATE_FINISHED = 'FINISHED';
     const STATE_FAILED = 'FAILED';
 
+    const TYPE_REMOVED = 'REMOVED';
+    const TYPE_ADDED = 'ADDED';
+    const TYPE_SKIPPED = 'SKIPPED';
+    const TYPE_CHANGED = 'CHANGED';
+
     /**
      * @var string
      */
@@ -319,9 +324,9 @@ class Store extends Endpoint
         Validation::checkDownloadableReportRunType($type);
 
         return $this->requestGet(
-            "reportRun/{$reportRunId}/_attachment/csv/{$attachmentId}",
+            "reportRun/{$reportRunId}/_attachment/{$type}/{$attachmentId}",
             [],
-            'plain'
+            $type === 'json' ? 'jsonl' : 'plain'
         );
     }
 
