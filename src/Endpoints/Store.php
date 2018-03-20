@@ -292,6 +292,54 @@ class Store extends Endpoint
     }
 
     /**
+     * @param string|null $reportId
+     * @param array $filters
+     *
+     * @return array
+     * @throws ImportIoException
+     * @throws InvalidArgumentException
+     */
+    public function getFirstReportRun(
+        string $reportId = null,
+        array $filters = []
+    ): array {
+        $reportRuns = $this->searchReportRuns(
+            $reportId,
+            ['_page' => 1, '_perpage' => 1] + $filters
+        );
+
+        if (empty($reportRuns['hits']['hits'])) {
+            return [];
+        }
+
+        foreach ($reportRuns['hits']['hits'] as $hit) {
+            if ($hit['_type'] === 'ReportRun') {
+                return $hit;
+            }
+        }
+
+        return [];
+    }
+
+    /**
+     * @param string|null $reportId
+     *
+     * @return array
+     * @throws ImportIoException
+     * @throws InvalidArgumentException
+     */
+    public function getLastFinishedReportRun(string $reportId = null): array
+    {
+        return $this->getFirstReportRun(
+            $reportId,
+            [
+                '_sort'  => '_meta.creationTimestamp',
+                'status' => self::STATE_FINISHED,
+            ]
+        );
+    }
+
+    /**
      * @param string $reportRunId
      *
      * @return array
