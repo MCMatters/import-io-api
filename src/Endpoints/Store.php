@@ -7,8 +7,8 @@ namespace McMatters\ImportIo\Endpoints;
 use InvalidArgumentException;
 use McMatters\ImportIo\Exceptions\ImportIoException;
 use McMatters\ImportIo\Helpers\Validation;
-use const null, true;
-use function array_filter, array_merge, count, implode, json_decode;
+use const false, null, true;
+use function array_filter, array_merge, ceil, count, implode, json_decode, min;
 
 /**
  * Class Store
@@ -25,6 +25,9 @@ class Store extends Endpoint
     const TYPE_ADDED = 'ADDED';
     const TYPE_SKIPPED = 'SKIPPED';
     const TYPE_CHANGED = 'CHANGED';
+
+    const LIMIT_PAGE = 15;
+    const LIMIT_COUNT = 1000;
 
     /**
      * @var string
@@ -98,6 +101,25 @@ class Store extends Endpoint
                 'state' => self::STATE_FINISHED,
             ]
         );
+    }
+
+    /**
+     * @param array $filters
+     *
+     * @return array
+     * @throws ImportIoException
+     */
+    public function searchExtractors(array $filters = []): array
+    {
+        return $this->requestGet('store/extractor/_search', ['query' => $filters]);
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllExtractors(): array
+    {
+        return $this->getAllEntities('searchExtractors');
     }
 
     /**
@@ -208,22 +230,7 @@ class Store extends Endpoint
      */
     public function getAllCrawlRuns(string $extractorId): array
     {
-        $page = 1;
-        $items = [];
-        $processed = 0;
-
-        do {
-            $content = $this->searchCrawlRuns(
-                $extractorId,
-                ['_page' => $page, '_perpage' => 100]
-            );
-
-            $items[] = $content['hits']['hits'];
-            $processed += count($content['hits']['hits']);
-            $page++;
-        } while ($content['hits']['total'] > $processed);
-
-        return array_merge([], ...$items);
+        return $this->getAllEntities('searchCrawlRuns', [$extractorId]);
     }
 
     /**
@@ -340,6 +347,14 @@ class Store extends Endpoint
     }
 
     /**
+     * @return array
+     */
+    public function getAllReportRuns(): array
+    {
+        return $this->getAllEntities('searchReportRuns', [null]);
+    }
+
+    /**
      * @param string $reportRunId
      *
      * @return array
@@ -376,6 +391,72 @@ class Store extends Endpoint
             [],
             $type === 'json' ? 'jsonl' : 'plain'
         );
+    }
+
+    /**
+     * @param string $method
+     * @param array $args
+     * @param int|null $remaining
+     * @param bool $oldest
+     *
+     * @return array
+     */
+    protected function getAllEntities(
+        string $method,
+        array $args = [],
+        int $remaining = null,
+        bool $oldest = true
+    ): array {
+        $page = 1;
+        $items = [];
+        $processed = 0;
+        $maxPages = 0;
+
+        do {
+            $content = $this->$method(...array_merge(
+                $args,
+                [[
+                    '_page'          => $page,
+                    '_perpage'       => min($remaining ?? self::LIMIT_COUNT, self::LIMIT_COUNT),
+                    '_sort'          => '_meta.creationTimestamp',
+                    '_mine'          => 'true',
+                    '_sortDirection' => $oldest ? 'DESC' : 'ASC',
+                ]]
+            ));
+
+            $countItems = count($content['hits']['hits']);
+
+            $items[] = $content['hits']['hits'];
+            $processed += $countItems;
+
+            if ($page === 1) {
+                $maxPages = (int) ceil($content['hits']['total'] / $processed);
+            }
+
+            if (null !== $remaining) {
+                $remaining -= $countItems;
+            }
+
+            $page++;
+        } while (
+            ($content['hits']['total'] > $processed && $page <= self::LIMIT_PAGE) &&
+            ((null !== $remaining && $remaining) || null === $remaining)
+        );
+
+        if ($maxPages > self::LIMIT_PAGE && null === $remaining) {
+            return array_merge(
+                [],
+                $this->getAllEntities(
+                    $method,
+                    $args,
+                    $content['hits']['total'] - $processed,
+                    false
+                ),
+                ...$items
+            );
+        }
+
+        return array_merge([], ...$items);
     }
 
     /**
