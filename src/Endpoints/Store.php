@@ -4,11 +4,13 @@ declare(strict_types = 1);
 
 namespace McMatters\ImportIo\Endpoints;
 
+use DateTime;
 use InvalidArgumentException;
 use McMatters\ImportIo\Exceptions\ImportIoException;
 use McMatters\ImportIo\Helpers\Validation;
+use Throwable;
 use const false, null, true;
-use function array_filter, array_merge, ceil, count, implode, json_decode, min;
+use function array_filter, array_merge, ceil, count, implode, json_decode, min, uasort;
 
 /**
  * Class Store
@@ -119,7 +121,9 @@ class Store extends Endpoint
      */
     public function getAllExtractors(): array
     {
-        return $this->getAllEntities('searchExtractors');
+        return $this->getAllEntities('searchExtractors', [], [
+            'q' => '_missing_:archived OR archived:false'
+        ]);
     }
 
     /**
@@ -278,6 +282,91 @@ class Store extends Endpoint
     }
 
     /**
+     * @param string $extractorId
+     *
+     * @return array
+     * @throws Throwable
+     */
+    public function getLastReportForExtractor(string $extractorId): array
+    {
+        $reports = [];
+
+        foreach ($this->getAllReportRunsForExtractor($extractorId) as $reportRun) {
+            if (!isset($reportRun['fields']['reportId'])) {
+                continue;
+            }
+
+            if (!isset($reports[$reportRun['fields']['reportId']])) {
+                $reports[$reportRun['fields']['reportId']] = [
+                    'name'  => $reportRun['fields']['name'],
+                    'token' => $reportRun['fields']['reportId'],
+                    'time'  => (new DateTime())->setTimestamp(
+                        (int) ($reportRun['fields']['_meta']['creationTimestamp'] / 1000)
+                    ),
+                ];
+            } else {
+                $newDate = (new DateTime())->setTimestamp(
+                    (int) ($reportRun['fields']['_meta']['creationTimestamp'] / 1000)
+                );
+
+                if ($newDate > $reports[$reportRun['fields']['reportId']]['time']) {
+                    $reports[$reportRun['fields']['reportId']]['time'] = $newDate;
+                }
+            }
+        }
+
+        uasort($reports, function ($a, $b) {
+            if ($a['time'] === $b['time']) {
+                return 0;
+            }
+
+            return $a['time'] < $b['time'] ? 1 : -1;
+        });
+
+        foreach ($reports as $report) {
+            return $report;
+        }
+
+        return [];
+    }
+
+    /**
+     * @param string $extractorId
+     * @param string $name
+     * @param array $primaryKey
+     * @param array $columns
+     *
+     * @return array
+     * @throws ImportIoException
+     * @throws InvalidArgumentException
+     */
+    public function createReport(
+        string $extractorId,
+        string $name,
+        array $primaryKey,
+        array $columns = []
+    ): array {
+        Validation::checkExtractorId($extractorId);
+
+        $report = $this->requestPost('store/report', [
+            'type' => 'CRAWL_DIFF',
+            'name' => $name,
+        ]);
+
+        $this->requestPost('store/reportconfiguration', [
+            'extractorId' => $extractorId,
+            'reportId'    => $report['guid'],
+            'config'      => [
+                'columns'    => $columns,
+                'primaryKey' => $primaryKey,
+                'type'       => 'CRAWL_DIFF',
+            ],
+        ]);
+
+        return $report;
+    }
+
+    /**
      * @param string|null $reportId
      * @param array $filters
      *
@@ -347,11 +436,37 @@ class Store extends Endpoint
     }
 
     /**
+     * @param array $filters
+     *
      * @return array
      */
-    public function getAllReportRuns(): array
+    public function getAllReportRuns(array $filters = []): array
     {
-        return $this->getAllEntities('searchReportRuns', [null]);
+        return $this->getAllEntities('searchReportRuns', [null, $filters]);
+    }
+
+    /**
+     * @param string $extractorId
+     * @param int $attempts
+     *
+     * @return array
+     * @throws Throwable
+     */
+    public function getAllReportRunsForExtractor(
+        string $extractorId,
+        int $attempts = 0
+    ): array {
+        try {
+            return $this->getAllReportRuns([
+                'q' => "extractorId:{$extractorId}"
+            ]);
+        } catch (Throwable $e) {
+            if ($attempts > 3) {
+                throw $e;
+            }
+
+            return $this->getAllReportRunsForExtractor($extractorId, ++$attempts);
+        }
     }
 
     /**
@@ -396,6 +511,7 @@ class Store extends Endpoint
     /**
      * @param string $method
      * @param array $args
+     * @param array $filters
      * @param int|null $remaining
      * @param bool $oldest
      *
@@ -404,6 +520,7 @@ class Store extends Endpoint
     protected function getAllEntities(
         string $method,
         array $args = [],
+        array $filters = [],
         int $remaining = null,
         bool $oldest = true
     ): array {
@@ -413,23 +530,28 @@ class Store extends Endpoint
         $maxPages = 0;
 
         do {
-            $content = $this->$method(...array_merge(
+            $arguments = array_merge(
                 $args,
-                [[
-                    '_page'          => $page,
-                    '_perpage'       => min($remaining ?? self::LIMIT_COUNT, self::LIMIT_COUNT),
-                    '_sort'          => '_meta.creationTimestamp',
-                    '_mine'          => 'true',
-                    '_sortDirection' => $oldest ? 'DESC' : 'ASC',
-                ]]
-            ));
+                [$filters + [
+                        '_page'          => $page,
+                        '_perpage'       => min($remaining ?? self::LIMIT_COUNT, self::LIMIT_COUNT),
+                        '_sort'          => '_meta.creationTimestamp',
+                        '_mine'          => 'true',
+                        '_sortDirection' => $oldest ? 'DESC' : 'ASC',
+                    ]]
+            );
+
+            $content = $this->$method(...$arguments);
 
             $countItems = count($content['hits']['hits']);
 
-            $items[] = $content['hits']['hits'];
+            if ($countItems > 0) {
+                $items[] = $content['hits']['hits'];
+            }
+
             $processed += $countItems;
 
-            if ($page === 1) {
+            if ($page === 1 && $processed) {
                 $maxPages = (int) ceil($content['hits']['total'] / $processed);
             }
 
@@ -439,6 +561,7 @@ class Store extends Endpoint
 
             $page++;
         } while (
+            $content['hits']['total'] > 0 &&
             ($content['hits']['total'] > $processed && $page <= self::LIMIT_PAGE) &&
             ((null !== $remaining && $remaining) || null === $remaining)
         );
@@ -449,6 +572,7 @@ class Store extends Endpoint
                 $this->getAllEntities(
                     $method,
                     $args,
+                    $filters,
                     $content['hits']['total'] - $processed,
                     false
                 ),
