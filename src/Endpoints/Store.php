@@ -122,7 +122,7 @@ class Store extends Endpoint
     public function getAllExtractors(): array
     {
         return $this->getAllEntities('searchExtractors', [], [
-            'q' => '_missing_:archived OR archived:false'
+            'q' => '_missing_:archived OR archived:false',
         ]);
     }
 
@@ -316,14 +316,12 @@ class Store extends Endpoint
         }
 
         uasort($reports, function ($a, $b) {
-            if ($a['time'] === $b['time']) {
-                return 0;
-            }
-
-            return $a['time'] < $b['time'] ? 1 : -1;
+            return $a['time'] <=> $b['time'];
         });
 
         foreach ($reports as $report) {
+            unset($report['time']);
+
             return $report;
         }
 

@@ -7,6 +7,7 @@ namespace McMatters\ImportIo\Endpoints;
 use GuzzleHttp\Client;
 use McMatters\ImportIo\Exceptions\ImportIoException;
 use Throwable;
+use const PHP_EOL;
 use const null, true;
 use function array_key_exists, array_merge_recursive, explode, json_decode,
     is_array, is_callable, simplexml_load_string, trim;
@@ -214,8 +215,14 @@ abstract class Endpoint
                 $json = json_decode($content, true);
                 $message = $content;
 
-                if (is_array($json) && array_key_exists('message', $json)) {
-                    $message = $json['message'];
+                if (is_array($json)) {
+                    if (array_key_exists('message', $json)) {
+                        $message = $json['message'];
+                    }
+
+                    if (array_key_exists('details', $json)) {
+                        $message .= PHP_EOL."Details: {$json['details']}";
+                    }
                 }
             } catch (Throwable $x) {
                 $message = $e->getMessage();
