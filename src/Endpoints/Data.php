@@ -35,7 +35,7 @@ class Data extends Endpoint
         Validation::checkExtractorId($extractorId);
         Validation::checkDataType($type);
 
-        return $this->requestGet(
+        return $this->httpClient->get(
             "extractor/{$extractorId}/{$type}/latest",
             [],
             $type === 'json' ? 'jsonl' : 'csv'

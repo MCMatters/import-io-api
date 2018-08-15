@@ -15,24 +15,25 @@ use RuntimeException;
 class StoreTest extends TestCase
 {
     /**
-     * Test "searchCrawlRuns" method.
-     *
-     * @throws \PHPUnit\Framework\AssertionFailedError
+     * @throws \InvalidArgumentException
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function testSearchCrawlRuns()
     {
         // Without query parameters.
-        $data = $this->client->endpoint('store')->searchCrawlRuns();
+        $data = $this->client->store()->searchCrawlRuns();
 
         $this->assertNotEmpty($data);
 
         // With extractorId parameter.
-        $data = $this->client->endpoint('store')->searchCrawlRuns($this->extractorId);
+        $data = $this->client->store()->searchCrawlRuns($this->extractorId);
 
         $this->assertNotEmpty($data);
 
         // With page and perPage parameters.
-        $data = $this->client->endpoint('store')->searchCrawlRuns(
+        $data = $this->client->store()->searchCrawlRuns(
             null,
             ['_page' => 1, '_perpage' => 1]
         );
@@ -40,7 +41,7 @@ class StoreTest extends TestCase
         $this->assertNotEmpty($data);
 
         // With everything except sortBy.
-        $data = $this->client->endpoint('store')->searchCrawlRuns(
+        $data = $this->client->store()->searchCrawlRuns(
             $this->extractorId,
             ['_page' => 1, '_perpage' => 1]
         );
@@ -49,31 +50,35 @@ class StoreTest extends TestCase
     }
 
     /**
-     * Test "getCrawlRunProgress" method.
-     *
-     * @throws RuntimeException
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function testGetCrawlRunProgress()
     {
         $crawlRun = $this->getFirstCrawlRun();
 
-        $data = $this->client->endpoint('store')->getCrawlRunProgress($crawlRun['_id']);
+        $data = $this->client->store()->getCrawlRunProgress($crawlRun['_id']);
 
         $this->assertNotEmpty($data);
         $this->assertSame($crawlRun['_id'], $data['guid']);
     }
 
     /**
-     * Test "downloadFileForCrawlRun" method with all types.
-     *
-     * @throws RuntimeException
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function testDownloadFileForCrawlRun()
     {
         $crawlRun = $this->getFirstCrawlRun();
 
         foreach (['json', 'csv', 'sample', 'log'] as $type) {
-            $data = $this->client->endpoint('store')->downloadFileForCrawlRun(
+            $data = $this->client->store()->downloadFileForCrawlRun(
                 $crawlRun['_id'],
                 $crawlRun['fields'][$type],
                 $type
@@ -84,10 +89,9 @@ class StoreTest extends TestCase
     }
 
     /**
-     * Test "downloadFileFromCrawlRun" with exception.
-     *
-     * @throws \PHPUnit\Framework\Exception
-     * @throws RuntimeException
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      */
     public function testDownloadFileFromCrawlRunWithException()
     {
@@ -95,7 +99,7 @@ class StoreTest extends TestCase
 
         $crawlRun = $this->getFirstCrawlRun();
 
-        $this->client->endpoint('store')->downloadFileForCrawlRun(
+        $this->client->store()->downloadFileForCrawlRun(
             $crawlRun['_id'],
             $crawlRun['fields']['json'],
             'html'
@@ -103,13 +107,14 @@ class StoreTest extends TestCase
     }
 
     /**
-     * Test "uploadUrlListForExtractor" method.
-     *
-     * @throws \PHPUnit\Framework\AssertionFailedError
+     * @throws \InvalidArgumentException
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function testUploadUrlListForExtractor()
     {
-        $data = $this->client->endpoint('store')->uploadUrlListForExtractor(
+        $data = $this->client->store()->uploadUrlListForExtractor(
             $this->extractorId,
             ['https://example.com', 'http://example.com']
         );
@@ -118,15 +123,17 @@ class StoreTest extends TestCase
     }
 
     /**
-     * Test "downloadUrlListFromExtractor" method.
-     *
-     * @throws RuntimeException
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function testDownloadUrlListFromExtractor()
     {
         $crawlRun = $this->getFirstCrawlRun($this->extractorId);
 
-        $data = $this->client->endpoint('store')->downloadUrlListFromExtractor(
+        $data = $this->client->store()->downloadUrlListFromExtractor(
             $this->extractorId,
             $crawlRun['fields']['urlListId']
         );
@@ -138,7 +145,9 @@ class StoreTest extends TestCase
      * @param string|null $extractorId
      *
      * @return array
-     * @throws RuntimeException
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      */
     protected function getFirstCrawlRun(string $extractorId = null): array
     {
@@ -148,7 +157,7 @@ class StoreTest extends TestCase
             return $crawlRun;
         }
 
-        $crawlRun = $this->client->endpoint('store')->getFirstCrawlRun($extractorId);
+        $crawlRun = $this->client->store()->getFirstCrawlRun($extractorId);
 
         if (empty($crawlRun)) {
             throw new RuntimeException('There is no crawlRuns');

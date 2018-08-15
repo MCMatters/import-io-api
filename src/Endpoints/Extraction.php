@@ -32,9 +32,9 @@ class Extraction extends Endpoint
     {
         Validation::checkExtractorId($extractorId);
 
-        return $this->requestGet(
+        return $this->httpClient->get(
             "extractor/{$extractorId}",
-            ['query' => ['url' => $url]]
+            ['url' => $url]
         );
     }
 }

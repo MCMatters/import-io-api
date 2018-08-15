@@ -14,51 +14,51 @@ use InvalidArgumentException;
 class DataTest extends TestCase
 {
     /**
-     * Test "getLatestData" method with getting json.
-     *
-     * @throws \PHPUnit\Framework\AssertionFailedError
+     * @throws \InvalidArgumentException
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function testGetLatestDataJson()
     {
-        $data = $this->client->endpoint('data')->getLatestData($this->extractorId);
+        $data = $this->client->data()->getLatestData($this->extractorId);
 
         $this->assertNotEmpty($data);
     }
 
     /**
-     * Test "getLatestData" method with getting csv string.
-     *
-     * @throws \PHPUnit\Framework\AssertionFailedError
+     * @throws \InvalidArgumentException
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function testGetLatestDataCsv()
     {
-        $data = $this->client->endpoint('data')->getLatestData($this->extractorId, 'csv');
+        $data = $this->client->data()->getLatestData($this->extractorId, 'csv');
 
         $this->assertNotEmpty($data);
     }
 
     /**
-     * Test "getLatestData" method with getting exception.
-     *
-     * @throws \PHPUnit\Framework\Exception
+     * @throws \InvalidArgumentException
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      */
     public function testGetLatestDataWithWrongType()
     {
         $this->expectException(InvalidArgumentException::class);
 
-        $this->client->endpoint('data')->getLatestData($this->extractorId, 'xls');
+        $this->client->data()->getLatestData($this->extractorId, 'xls');
     }
 
     /**
-     * Test "getLatestData" method with getting exception.
-     *
-     * @throws \PHPUnit\Framework\Exception
+     * @throws \InvalidArgumentException
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \Exception
      */
     public function testGetLatestDataWithWrongExtractorId()
     {
         $this->expectException(InvalidArgumentException::class);
 
-        $this->client->endpoint('data')->getLatestData(md5(random_bytes(12)));
+        $this->client->data()->getLatestData(md5(random_bytes(12)));
     }
 }

@@ -31,6 +31,6 @@ class Api extends Endpoint
     {
         Validation::checkReportId($reportId);
 
-        return $this->requestPost("report/{$reportId}/run");
+        return $this->httpClient->post("report/{$reportId}/run");
     }
 }

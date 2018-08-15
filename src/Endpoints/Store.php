@@ -52,9 +52,10 @@ class Store extends Endpoint
             Validation::checkExtractorId($extractorId);
         }
 
-        $query = array_filter(['extractorId' => $extractorId] + $filters);
-
-        return $this->requestGet('crawlrun/_search', ['query' => $query]);
+        return $this->httpClient->get(
+            'crawlrun/_search',
+            array_filter(['extractorId' => $extractorId] + $filters)
+        );
     }
 
     /**
@@ -113,7 +114,7 @@ class Store extends Endpoint
      */
     public function searchExtractors(array $filters = []): array
     {
-        return $this->requestGet('store/extractor/_search', ['query' => $filters]);
+        return $this->httpClient->get('store/extractor/_search', $filters);
     }
 
     /**
@@ -137,7 +138,7 @@ class Store extends Endpoint
     {
         Validation::checkExtractorId($extractorId);
 
-        return $this->requestGet("store/extractor/{$extractorId}");
+        return $this->httpClient->get("store/extractor/{$extractorId}");
     }
 
     /**
@@ -151,7 +152,7 @@ class Store extends Endpoint
     {
         Validation::checkCrawlRunId($crawlRunId);
 
-        return $this->requestGet("crawlrun/{$crawlRunId}");
+        return $this->httpClient->get("crawlrun/{$crawlRunId}");
     }
 
     /**
@@ -172,7 +173,7 @@ class Store extends Endpoint
         Validation::checkAttachmentId($attachmentId);
         Validation::checkDownloadableCrawlRunType($type);
 
-        return $this->requestGet(
+        return $this->httpClient->get(
             "crawlRun/{$crawlRunId}/_attachment/{$type}/{$attachmentId}",
             [],
             $this->getAcceptDownloadType($type)
@@ -193,10 +194,9 @@ class Store extends Endpoint
     ): array {
         Validation::checkExtractorId($extractorId);
 
-        $data = $this->requestPut(
+        $data = $this->httpClient->put(
             "extractor/{$extractorId}/_attachment/urlList",
             implode("\n", $urlList),
-            [],
             'plain'
         );
 
@@ -218,7 +218,7 @@ class Store extends Endpoint
         Validation::checkExtractorId($extractorId);
         Validation::checkAttachmentId($attachmentId);
 
-        return $this->requestGet(
+        return $this->httpClient->get(
             "extractor/{$extractorId}/_attachment/urlList/{$attachmentId}",
             [],
             'plain'
@@ -278,7 +278,7 @@ class Store extends Endpoint
     {
         Validation::checkReportId($reportId);
 
-        return $this->requestGet("report/{$reportId}");
+        return $this->httpClient->get("report/{$reportId}");
     }
 
     /**
@@ -298,9 +298,9 @@ class Store extends Endpoint
 
             if (!isset($reports[$reportRun['fields']['reportId']])) {
                 $reports[$reportRun['fields']['reportId']] = [
-                    'name'  => $reportRun['fields']['name'],
+                    'name' => $reportRun['fields']['name'],
                     'token' => $reportRun['fields']['reportId'],
-                    'time'  => (new DateTime())->setTimestamp(
+                    'time' => (new DateTime())->setTimestamp(
                         (int) ($reportRun['fields']['_meta']['creationTimestamp'] / 1000)
                     ),
                 ];
@@ -346,18 +346,18 @@ class Store extends Endpoint
     ): array {
         Validation::checkExtractorId($extractorId);
 
-        $report = $this->requestPost('store/report', [
+        $report = $this->httpClient->post('store/report', [
             'type' => 'CRAWL_DIFF',
             'name' => $name,
         ]);
 
-        $this->requestPost('store/reportconfiguration', [
+        $this->httpClient->post('store/reportconfiguration', [
             'extractorId' => $extractorId,
-            'reportId'    => $report['guid'],
-            'config'      => [
-                'columns'    => $columns,
+            'reportId' => $report['guid'],
+            'config' => [
+                'columns' => $columns,
                 'primaryKey' => $primaryKey,
-                'type'       => 'CRAWL_DIFF',
+                'type' => 'CRAWL_DIFF',
             ],
         ]);
 
@@ -380,9 +380,10 @@ class Store extends Endpoint
             Validation::checkReportId($reportId);
         }
 
-        $query = array_filter(['reportId' => $reportId] + $filters);
-
-        return $this->requestGet('reportRun/_search', ['query' => $query]);
+        return $this->httpClient->get(
+            'reportRun/_search',
+            array_filter(['reportId' => $reportId] + $filters)
+        );
     }
 
     /**
@@ -427,7 +428,7 @@ class Store extends Endpoint
         return $this->getFirstReportRun(
             $reportId,
             [
-                '_sort'  => '_meta.creationTimestamp',
+                '_sort' => '_meta.creationTimestamp',
                 'status' => self::STATE_FINISHED,
             ]
         );
@@ -456,7 +457,7 @@ class Store extends Endpoint
     ): array {
         try {
             return $this->getAllReportRuns([
-                'q' => "extractorId:{$extractorId}"
+                'q' => "extractorId:{$extractorId}",
             ]);
         } catch (Throwable $e) {
             if ($attempts > 3) {
@@ -478,7 +479,7 @@ class Store extends Endpoint
     {
         Validation::checkReportRunId($reportRunId);
 
-        return $this->requestGet("reportRun/{$reportRunId}");
+        return $this->httpClient->get("reportRun/{$reportRunId}");
     }
 
     /**
@@ -499,7 +500,7 @@ class Store extends Endpoint
         Validation::checkAttachmentId($attachmentId);
         Validation::checkDownloadableReportRunType($type);
 
-        return $this->requestGet(
+        return $this->httpClient->get(
             "reportRun/{$reportRunId}/_attachment/{$type}/{$attachmentId}",
             [],
             $type === 'json' ? 'jsonl' : 'plain'
@@ -531,10 +532,10 @@ class Store extends Endpoint
             $arguments = array_merge(
                 $args,
                 [$filters + [
-                        '_page'          => $page,
-                        '_perpage'       => min($remaining ?? self::LIMIT_COUNT, self::LIMIT_COUNT),
-                        '_sort'          => '_meta.creationTimestamp',
-                        '_mine'          => 'true',
+                        '_page' => $page,
+                        '_perpage' => min($remaining ?? self::LIMIT_COUNT, self::LIMIT_COUNT),
+                        '_sort' => '_meta.creationTimestamp',
+                        '_mine' => 'true',
                         '_sortDirection' => $oldest ? 'DESC' : 'ASC',
                     ]]
             );

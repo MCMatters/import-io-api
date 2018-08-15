@@ -27,7 +27,7 @@ class Schedule extends Endpoint
      */
     public function list(): array
     {
-        return $this->requestGet('extractor');
+        return $this->httpClient->get('extractor');
     }
 
     /**
@@ -48,11 +48,11 @@ class Schedule extends Endpoint
         Validation::checkScheduleInterval($interval);
 
         $body = array_merge($additional, [
-            'interval'    => $interval,
+            'interval' => $interval,
             'extractorId' => $extractorId,
         ]);
 
-        return $this->requestPost('extractor', $body);
+        return $this->httpClient->post('extractor', $body);
     }
 
     /**
@@ -66,7 +66,7 @@ class Schedule extends Endpoint
     {
         Validation::checkExtractorId($extractorId);
 
-        return $this->requestGet("extractor/{$extractorId}");
+        return $this->httpClient->get("extractor/{$extractorId}");
     }
 
     /**
@@ -80,6 +80,6 @@ class Schedule extends Endpoint
     {
         Validation::checkExtractorId($extractorId);
 
-        return $this->requestDelete("extractor/{$extractorId}");
+        return $this->httpClient->delete("extractor/{$extractorId}");
     }
 }

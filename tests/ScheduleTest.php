@@ -15,27 +15,28 @@ use Throwable;
 class ScheduleTest extends TestCase
 {
     /**
-     * Test "list" method.
-     *
-     * @throws \PHPUnit\Framework\AssertionFailedError
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function testList()
     {
-        $data = $this->client->endpoint('schedule')->list();
+        $data = $this->client->schedule()->list();
 
         $this->assertNotEmpty($data);
     }
 
     /**
-     * Test "create" method.
-     *
-     * @throws \PHPUnit\Framework\AssertionFailedError
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \InvalidArgumentException
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function testCreate()
     {
         $interval = '15 * * * *';
 
-        $data = $this->client->endpoint('schedule')->create($this->extractorId, $interval);
+        $data = $this->client->schedule()->create($this->extractorId, $interval);
 
         $this->assertNotEmpty($data);
         $this->assertSame($this->extractorId, $data['extractorId']);
@@ -43,59 +44,65 @@ class ScheduleTest extends TestCase
     }
 
     /**
-     * Test "getByExtractorId" method.
-     *
-     * @throws \PHPUnit\Framework\AssertionFailedError
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \InvalidArgumentException
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function testGetByExtractorId()
     {
-        $data = $this->client->endpoint('schedule')->getByExtractorId($this->extractorId);
+        $data = $this->client->schedule()->getByExtractorId($this->extractorId);
 
         $this->assertNotEmpty($data);
         $this->assertSame($this->extractorId, $data['extractorId']);
     }
 
     /**
-     * Test "getByExtractorId" with creating.
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \InvalidArgumentException
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function testGetByExtractorIdWithCreating()
     {
         // Remove schedule before.
         try {
-            $this->client->endpoint('schedule')->delete($this->extractorId);
+            $this->client->schedule()->delete($this->extractorId);
         } catch (Throwable $e) {
             //
         }
 
         $interval = '15 * * * *';
 
-        $this->client->endpoint('schedule')->create($this->extractorId, $interval);
-        $data = $this->client->endpoint('schedule')->getByExtractorId($this->extractorId);
+        $this->client->schedule()->create($this->extractorId, $interval);
+        $data = $this->client->schedule()->getByExtractorId($this->extractorId);
 
         $this->assertSame($this->extractorId, $data['extractorId']);
         $this->assertSame($interval, $data['interval']);
     }
 
     /**
-     * Test "delete" method.
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \InvalidArgumentException
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function testDelete()
     {
-        $code = $this->client->endpoint('schedule')->delete($this->extractorId);
+        $code = $this->client->schedule()->delete($this->extractorId);
 
         $this->assertSame(200, $code);
     }
 
     /**
-     * Test "delete" method with getting exception.
-     *
-     * @throws \PHPUnit\Framework\Exception
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \InvalidArgumentException
      */
     public function testDeleteWithException()
     {
         $this->expectException(ImportIoException::class);
 
-        $this->client->endpoint('schedule')->delete($this->extractorId);
-        $this->client->endpoint('schedule')->delete($this->extractorId);
+        $this->client->schedule()->delete($this->extractorId);
+        $this->client->schedule()->delete($this->extractorId);
     }
 }

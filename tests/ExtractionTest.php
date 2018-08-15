@@ -12,13 +12,14 @@ namespace McMatters\ImportIo\Tests;
 class ExtractionTest extends TestCase
 {
     /**
-     * Test "extractorQuery" method.
-     *
-     * @throws \PHPUnit\Framework\AssertionFailedError
+     * @throws \InvalidArgumentException
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function testExtractorQuery()
     {
-        $data = $this->client->endpoint('extraction')->extractorQuery(
+        $data = $this->client->extraction()->extractorQuery(
             $this->extractorId,
             'https://example.com'
         );

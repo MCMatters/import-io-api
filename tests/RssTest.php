@@ -12,26 +12,28 @@ namespace McMatters\ImportIo\Tests;
 class RssTest extends TestCase
 {
     /**
-     * Test "getRuns" method.
-     *
-     * @throws \PHPUnit\Framework\AssertionFailedError
+     * @throws \InvalidArgumentException
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function testGetRuns()
     {
-        $data = $this->client->endpoint('rss')->getRuns($this->extractorId);
+        $data = $this->client->rss()->getRuns($this->extractorId);
 
         $this->assertNotEmpty($data);
     }
 
     /**
-     * Test "getRunsGuids" method.
-     *
-     * @throws \PHPUnit\Framework\AssertionFailedError
+     * @throws \InvalidArgumentException
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function testGetRunsGuids()
     {
-        $data = $this->client->endpoint('rss')->getRunsGuids($this->extractorId);
+        $data = $this->client->rss()->getRunsGuids($this->extractorId);
 
-        $this->assertTrue(is_array($data));
+        $this->assertInternalType('array', $data);
     }
 }

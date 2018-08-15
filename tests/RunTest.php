@@ -20,21 +20,22 @@ class RunTest extends TestCase
     public function __destruct()
     {
         try {
-            $this->client->endpoint('run')->cancelCrawl($this->extractorId);
+            $this->client->run()->cancelCrawl($this->extractorId);
         } catch (Throwable $e) {
             // There is no ran crawl.
         }
     }
 
     /**
-     * Test "startCrawl" method.
-     *
-     * @throws \PHPUnit\Framework\AssertionFailedError
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \InvalidArgumentException
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function testStartAndCancelCrawl()
     {
-        $startCrawlId = $this->client->endpoint('run')->startCrawl($this->extractorId);
-        $cancelCrawlId = $this->client->endpoint('run')->cancelCrawl($this->extractorId);
+        $startCrawlId = $this->client->run()->startCrawl($this->extractorId);
+        $cancelCrawlId = $this->client->run()->cancelCrawl($this->extractorId);
 
         $this->assertNotEmpty($startCrawlId);
         $this->assertNotEmpty($cancelCrawlId);
@@ -42,29 +43,27 @@ class RunTest extends TestCase
     }
 
     /**
-     * Test "startCrawl" method with getting exception.
-     *
-     * @throws \PHPUnit\Framework\Exception
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \InvalidArgumentException
      */
     public function testStartCrawlException()
     {
         $this->expectException(ImportIoException::class);
 
-        $this->client->endpoint('run')->startCrawl($this->extractorId);
-        $this->client->endpoint('run')->startCrawl($this->extractorId);
-        $this->client->endpoint('run')->cancelCrawl($this->extractorId);
+        $this->client->run()->startCrawl($this->extractorId);
+        $this->client->run()->startCrawl($this->extractorId);
+        $this->client->run()->cancelCrawl($this->extractorId);
     }
 
     /**
-     * Test "cancelCrawl" method with getting exception.
-     *
-     * @throws \PHPUnit\Framework\Exception
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @throws \InvalidArgumentException
      */
     public function testCancelCrawlException()
     {
         $this->expectException(ImportIoException::class);
 
-        $this->client->endpoint('run')->cancelCrawl($this->extractorId);
-        $this->client->endpoint('run')->cancelCrawl($this->extractorId);
+        $this->client->run()->cancelCrawl($this->extractorId);
+        $this->client->run()->cancelCrawl($this->extractorId);
     }
 }

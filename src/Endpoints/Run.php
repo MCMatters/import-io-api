@@ -31,7 +31,7 @@ class Run extends Endpoint
     {
         Validation::checkExtractorId($extractorId);
 
-        $data = $this->requestPost("extractor/{$extractorId}/start");
+        $data = $this->httpClient->post("extractor/{$extractorId}/start");
 
         return $data['crawlRunId'] ?? '';
     }
@@ -47,7 +47,7 @@ class Run extends Endpoint
     {
         Validation::checkExtractorId($extractorId);
 
-        $data = $this->requestPost("extractor/{$extractorId}/cancel");
+        $data = $this->httpClient->post("extractor/{$extractorId}/cancel");
 
         return $data['crawlRunId'] ?? '';
     }

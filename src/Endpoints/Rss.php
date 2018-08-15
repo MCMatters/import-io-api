@@ -32,7 +32,11 @@ class Rss extends Endpoint
     {
         Validation::checkExtractorId($extractorId);
 
-        return $this->requestGet("extractor/{$extractorId}/runs", [], 'xml');
+        return $this->httpClient->get(
+            "extractor/{$extractorId}/runs",
+            [],
+            'xml'
+        );
     }
 
     /**
