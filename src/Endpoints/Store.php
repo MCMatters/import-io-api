@@ -435,13 +435,34 @@ class Store extends Endpoint
     }
 
     /**
+     * @param int $timestamp
+     * @param string|null $reportId
+     *
+     * @return array
+     * @throws \InvalidArgumentException
+     */
+    public function getFinishedReportRunsAfter(
+        int $timestamp,
+        string $reportId = null
+    ): array {
+        $filters = ['q' => "timestamp:>{$timestamp}"];
+
+        if (null !== $reportId) {
+            Validation::checkReportId($reportId);
+            $filters['reportId'] = $reportId;
+        }
+
+        return $this->getAllReportRuns($filters);
+    }
+
+    /**
      * @param array $filters
      *
      * @return array
      */
     public function getAllReportRuns(array $filters = []): array
     {
-        return $this->getAllEntities('searchReportRuns', [null, $filters]);
+        return $this->getAllEntities('searchReportRuns', [null], $filters);
     }
 
     /**
