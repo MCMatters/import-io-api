@@ -62,7 +62,10 @@ class Client
                 $accept
             );
         } catch (Throwable $e) {
-            throw new ImportIoException($this->getExceptionMessage($e));
+            throw new ImportIoException(
+                $this->getExceptionMessage($e),
+                (int) $e->getCode()
+            );
         }
     }
 
@@ -90,7 +93,10 @@ class Client
                 $accept
             );
         } catch (Throwable $e) {
-            throw new ImportIoException($this->getExceptionMessage($e));
+            throw new ImportIoException(
+                $this->getExceptionMessage($e),
+                (int) $e->getCode()
+            );
         }
     }
 
@@ -118,7 +124,10 @@ class Client
                 $accept
             );
         } catch (Throwable $e) {
-            throw new ImportIoException($this->getExceptionMessage($e));
+            throw new ImportIoException(
+                $this->getExceptionMessage($e),
+                (int) $e->getCode()
+            );
         }
     }
 
@@ -133,7 +142,10 @@ class Client
         try {
             return $this->httpClient->delete($uri)->getStatusCode();
         } catch (Throwable $e) {
-            throw new ImportIoException($this->getExceptionMessage($e));
+            throw new ImportIoException(
+                $this->getExceptionMessage($e),
+                (int) $e->getCode()
+            );
         }
     }
 
