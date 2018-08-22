@@ -439,7 +439,6 @@ class Store extends Endpoint
      * @param string|null $reportId
      *
      * @return array
-     * @throws \InvalidArgumentException
      */
     public function getFinishedReportRunsAfter(
         int $timestamp,
@@ -447,22 +446,20 @@ class Store extends Endpoint
     ): array {
         $filters = ['q' => "timestamp:>{$timestamp}"];
 
-        if (null !== $reportId) {
-            Validation::checkReportId($reportId);
-            $filters['reportId'] = $reportId;
-        }
-
-        return $this->getAllReportRuns($filters);
+        return $this->getAllReportRuns($filters, $reportId);
     }
 
     /**
      * @param array $filters
+     * @param string|null $reportId
      *
      * @return array
      */
-    public function getAllReportRuns(array $filters = []): array
-    {
-        return $this->getAllEntities('searchReportRuns', [null], $filters);
+    public function getAllReportRuns(
+        array $filters = [],
+        string $reportId = null
+    ): array {
+        return $this->getAllEntities('searchReportRuns', [$reportId], $filters);
     }
 
     /**
