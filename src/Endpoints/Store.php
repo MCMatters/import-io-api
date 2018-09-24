@@ -316,7 +316,7 @@ class Store extends Endpoint
         }
 
         uasort($reports, function ($a, $b) {
-            return $a['time'] <=> $b['time'];
+            return $b['time'] <=> $a['time'];
         });
 
         foreach ($reports as $report) {
