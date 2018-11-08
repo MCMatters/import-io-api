@@ -133,6 +133,37 @@ class Client
 
     /**
      * @param string $uri
+     * @param mixed $body
+     * @param string $accept
+     *
+     * @return mixed
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     */
+    public function patch(string $uri, $body = null, string $accept = 'json')
+    {
+        try {
+            return $this->parseResponse(
+                $this->httpClient->patch(
+                    $uri,
+                    [
+                        'json' => $body ?? [],
+                        'headers' => [
+                            'Accept' => $this->getAcceptHeader($accept),
+                        ],
+                    ]
+                ),
+                $accept
+            );
+        } catch (Throwable $e) {
+            throw new ImportIoException(
+                $this->getExceptionMessage($e),
+                (int) $e->getCode()
+            );
+        }
+    }
+
+    /**
+     * @param string $uri
      *
      * @return int
      * @throws \McMatters\ImportIo\Exceptions\ImportIoException

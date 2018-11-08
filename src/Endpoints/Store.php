@@ -526,6 +526,35 @@ class Store extends Endpoint
     }
 
     /**
+     * @param string $extractorId
+     * @param string $url
+     * @param array $headers
+     *
+     * @return mixed
+     * @throws ImportIoException
+     * @throws InvalidArgumentException
+     */
+    public function addWebhookUrlToExtractor(
+        string $extractorId,
+        string $url,
+        array $headers = []
+    ) {
+        Validation::checkExtractorId($extractorId);
+
+        return $this->httpClient->patch(
+            "store/extractor/{$extractorId}",
+            [
+                'webhooks' => [
+                    [
+                        'url' => $url,
+                        'headers' => $headers,
+                    ],
+                ],
+            ]
+        );
+    }
+
+    /**
      * @param string $method
      * @param array $args
      * @param array $filters
