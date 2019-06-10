@@ -7,6 +7,9 @@ namespace McMatters\ImportIo\Endpoints;
 use InvalidArgumentException;
 use McMatters\ImportIo\Exceptions\ImportIoException;
 use McMatters\ImportIo\Helpers\Validation;
+use McMatters\Ticl\Enums\HttpStatusCode;
+use Throwable;
+use const false, true;
 
 /**
  * Class Data
@@ -40,5 +43,42 @@ class Data extends Endpoint
             [],
             $type === 'json' ? 'jsonl' : 'csv'
         );
+    }
+
+    /**
+     * @param string $extractorId
+     *
+     * @return bool
+     */
+    public function checkDataAccessibility(string $extractorId): bool
+    {
+        Validation::checkExtractorId($extractorId);
+
+        $firstQuery = $this->httpClient->request(
+            'get',
+            "extractor/{$extractorId}/json/latest",
+            ['follow_redirects' => false]
+        );
+
+        $firstQueryStatusCode = $firstQuery->getStatusCode();
+        $firstQueryHeaders = $firstQuery->getHeaders();
+
+        if ($firstQueryStatusCode >= HttpStatusCode::MOVED_PERMANENTLY &&
+            $firstQuery <= HttpStatusCode::PERMANENT_REDIRECT &&
+            !empty($firstQueryHeaders['Location'])
+        ) {
+            try {
+                $this->httpClient->head(
+                    $firstQueryHeaders['Location'],
+                    ['skip_base_uri' => true]
+                );
+
+                return true;
+            } catch (Throwable $e) {
+                return false;
+            }
+        }
+
+        return false;
     }
 }

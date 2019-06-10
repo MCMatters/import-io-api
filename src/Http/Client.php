@@ -4,13 +4,14 @@ declare(strict_types = 1);
 
 namespace McMatters\ImportIo\Http;
 
+use InvalidArgumentException;
 use McMatters\ImportIo\Exceptions\ImportIoException;
 use McMatters\Ticl\Client as HttpClient;
 use McMatters\Ticl\Http\Response;
 use Throwable;
 use const PHP_EOL;
 use const null, true;
-use function explode, json_decode, is_array, is_callable, simplexml_load_string;
+use function explode, json_decode, in_array, is_array, is_callable, simplexml_load_string, strtolower;
 
 /**
  * Class Client
@@ -39,6 +40,24 @@ class Client
     }
 
     /**
+     * @param string $method
+     * @param string $uri
+     * @param array $options
+     *
+     * @return mixed
+     */
+    public function request(string $method, string $uri, array $options = [])
+    {
+        $method = strtolower($method);
+
+        if (!in_array($method, ['head', 'get', 'post', 'patch', 'delete'], true)) {
+            throw new InvalidArgumentException('Wrong method passed');
+        }
+
+        return $this->httpClient->{$method}($uri, $options);
+    }
+
+    /**
      * @param string $uri
      * @param array $query
      * @param string $accept
@@ -62,10 +81,7 @@ class Client
                 $accept
             );
         } catch (Throwable $e) {
-            throw new ImportIoException(
-                $this->getExceptionMessage($e),
-                (int) $e->getCode()
-            );
+            $this->throwException($e);
         }
     }
 
@@ -93,10 +109,7 @@ class Client
                 $accept
             );
         } catch (Throwable $e) {
-            throw new ImportIoException(
-                $this->getExceptionMessage($e),
-                (int) $e->getCode()
-            );
+            $this->throwException($e);
         }
     }
 
@@ -124,10 +137,7 @@ class Client
                 $accept
             );
         } catch (Throwable $e) {
-            throw new ImportIoException(
-                $this->getExceptionMessage($e),
-                (int) $e->getCode()
-            );
+            $this->throwException($e);
         }
     }
 
@@ -155,10 +165,7 @@ class Client
                 $accept
             );
         } catch (Throwable $e) {
-            throw new ImportIoException(
-                $this->getExceptionMessage($e),
-                (int) $e->getCode()
-            );
+            $this->throwException($e);
         }
     }
 
@@ -173,10 +180,23 @@ class Client
         try {
             return $this->httpClient->delete($uri)->getStatusCode();
         } catch (Throwable $e) {
-            throw new ImportIoException(
-                $this->getExceptionMessage($e),
-                (int) $e->getCode()
-            );
+            $this->throwException($e);
+        }
+    }
+
+    /**
+     * @param string $uri
+     * @param array $options
+     *
+     * @return \McMatters\Ticl\Http\Response
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     */
+    public function head(string $uri, array $options = []): Response
+    {
+        try {
+            return $this->httpClient->head($uri, $options);
+        } catch (Throwable $e) {
+            $this->throwException($e);
         }
     }
 
@@ -248,6 +268,19 @@ class Client
         }
 
         return $parsed;
+    }
+
+    /**
+     * @param \Throwable $e
+     *
+     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     */
+    protected function throwException(Throwable $e)
+    {
+        throw new ImportIoException(
+            $this->getExceptionMessage($e),
+            (int) $e->getCode()
+        );
     }
 
     /**
