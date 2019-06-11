@@ -64,7 +64,7 @@ class Data extends Endpoint
         $firstQueryHeaders = $firstQuery->getHeaders();
 
         if ($firstQueryStatusCode >= HttpStatusCode::MOVED_PERMANENTLY &&
-            $firstQuery <= HttpStatusCode::PERMANENT_REDIRECT &&
+            $firstQueryStatusCode <= HttpStatusCode::PERMANENT_REDIRECT &&
             !empty($firstQueryHeaders['Location'])
         ) {
             try {
