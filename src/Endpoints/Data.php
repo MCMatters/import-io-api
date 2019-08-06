@@ -10,6 +10,8 @@ use McMatters\ImportIo\Helpers\Validation;
 use McMatters\Ticl\Enums\HttpStatusCode;
 use Throwable;
 use const false, true;
+use const CASE_LOWER;
+use function array_change_key_case;
 
 /**
  * Class Data
@@ -61,15 +63,15 @@ class Data extends Endpoint
         );
 
         $firstQueryStatusCode = $firstQuery->getStatusCode();
-        $firstQueryHeaders = $firstQuery->getHeaders();
+        $firstQueryHeaders = array_change_key_case($firstQuery->getHeaders(), CASE_LOWER);
 
         if ($firstQueryStatusCode >= HttpStatusCode::MOVED_PERMANENTLY &&
             $firstQueryStatusCode <= HttpStatusCode::PERMANENT_REDIRECT &&
-            !empty($firstQueryHeaders['Location'])
+            !empty($firstQueryHeaders['location'])
         ) {
             try {
                 $this->httpClient->head(
-                    $firstQueryHeaders['Location'],
+                    $firstQueryHeaders['location'],
                     ['skip_base_uri' => true]
                 );
 
