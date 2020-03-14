@@ -4,8 +4,6 @@ declare(strict_types = 1);
 
 namespace McMatters\ImportIo\Endpoints;
 
-use InvalidArgumentException;
-use McMatters\ImportIo\Exceptions\ImportIoException;
 use McMatters\ImportIo\Helpers\Validation;
 
 /**
@@ -24,8 +22,8 @@ class Run extends Endpoint
      * @param string $extractorId
      *
      * @return string
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function startCrawl(string $extractorId): string
     {
@@ -40,8 +38,8 @@ class Run extends Endpoint
      * @param string $extractorId
      *
      * @return string
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function cancelCrawl(string $extractorId): string
     {

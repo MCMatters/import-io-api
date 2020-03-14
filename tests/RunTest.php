@@ -1,10 +1,9 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\ImportIo\Tests;
 
-use McMatters\ImportIo\Exceptions\ImportIoException;
 use Throwable;
 
 /**
@@ -27,7 +26,6 @@ class RunTest extends TestCase
     }
 
     /**
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \InvalidArgumentException
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
@@ -43,12 +41,11 @@ class RunTest extends TestCase
     }
 
     /**
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \InvalidArgumentException
      */
     public function testStartCrawlException()
     {
-        $this->expectException(ImportIoException::class);
+        $this->expectException(Throwable::class);
 
         $this->client->run()->startCrawl($this->extractorId);
         $this->client->run()->startCrawl($this->extractorId);
@@ -56,12 +53,11 @@ class RunTest extends TestCase
     }
 
     /**
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \InvalidArgumentException
      */
     public function testCancelCrawlException()
     {
-        $this->expectException(ImportIoException::class);
+        $this->expectException(Throwable::class);
 
         $this->client->run()->cancelCrawl($this->extractorId);
         $this->client->run()->cancelCrawl($this->extractorId);

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\ImportIo\Tests;
 
@@ -13,7 +13,6 @@ class RssTest extends TestCase
 {
     /**
      * @throws \InvalidArgumentException
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -26,7 +25,6 @@ class RssTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */

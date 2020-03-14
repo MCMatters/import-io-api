@@ -1,12 +1,11 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\ImportIo\Endpoints;
 
-use InvalidArgumentException;
-use McMatters\ImportIo\Exceptions\ImportIoException;
 use McMatters\ImportIo\Helpers\Validation;
+
 use function array_merge;
 
 /**
@@ -23,7 +22,6 @@ class Schedule extends Endpoint
 
     /**
      * @return array
-     * @throws ImportIoException
      */
     public function list(): array
     {
@@ -36,8 +34,8 @@ class Schedule extends Endpoint
      * @param array $additional
      *
      * @return array
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function create(
         string $extractorId,
@@ -59,8 +57,8 @@ class Schedule extends Endpoint
      * @param string $extractorId
      *
      * @return array
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function getByExtractorId(string $extractorId): array
     {
@@ -73,8 +71,8 @@ class Schedule extends Endpoint
      * @param string $extractorId
      *
      * @return int
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function delete(string $extractorId): int
     {

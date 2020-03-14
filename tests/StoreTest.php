@@ -1,11 +1,13 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\ImportIo\Tests;
 
 use InvalidArgumentException;
 use RuntimeException;
+
+use const null;
 
 /**
  * Class StoreTest
@@ -16,7 +18,6 @@ class StoreTest extends TestCase
 {
     /**
      * @throws \InvalidArgumentException
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -52,7 +53,6 @@ class StoreTest extends TestCase
     /**
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -69,7 +69,6 @@ class StoreTest extends TestCase
     /**
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -91,7 +90,6 @@ class StoreTest extends TestCase
     /**
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      */
     public function testDownloadFileFromCrawlRunWithException()
     {
@@ -108,7 +106,6 @@ class StoreTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -125,7 +122,6 @@ class StoreTest extends TestCase
     /**
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -145,9 +141,9 @@ class StoreTest extends TestCase
      * @param string|null $extractorId
      *
      * @return array
+     *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      */
     protected function getFirstCrawlRun(string $extractorId = null): array
     {

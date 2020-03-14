@@ -1,13 +1,13 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\ImportIo\Endpoints;
 
-use InvalidArgumentException;
-use McMatters\ImportIo\Exceptions\ImportIoException;
 use McMatters\ImportIo\Helpers\Validation;
 use Throwable;
+
+use const null;
 
 /**
  * Class Rss
@@ -25,8 +25,8 @@ class Rss extends Endpoint
      * @param string $extractorId
      *
      * @return array
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function getRuns(string $extractorId): array
     {
@@ -43,8 +43,8 @@ class Rss extends Endpoint
      * @param string $extractorId
      *
      * @return array
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function getRunsGuids(string $extractorId): array
     {
@@ -53,13 +53,15 @@ class Rss extends Endpoint
         $data = $this->getRuns($extractorId);
 
         try {
-            $items = ((array) $data['channel'])['item'];
+            $items = ((array) $data['channel'])['item'] ?? [];
         } catch (Throwable $e) {
             $items = [];
         }
 
         foreach ($items as $item) {
-            $guids[] = ((array) $item)['guid'];
+            if ($guid = ((array) $item)['guid'] ?? null) {
+                $guids[] = $guid;
+            }
         }
 
         return $guids;

@@ -7,6 +7,10 @@ namespace McMatters\ImportIo\Tests;
 use McMatters\ImportIo\ImportIoClient;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
+use function getenv;
+
+use const null;
+
 /**
  * Class TestCase
  *
@@ -15,7 +19,7 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 class TestCase extends BaseTestCase
 {
     /**
-     * @var ImportIoClient
+     * @var \McMatters\ImportIo\ImportIoClient
      */
     protected $client;
 

@@ -1,12 +1,14 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\ImportIo;
 
 use InvalidArgumentException;
-use const true;
+
 use function is_array, is_string, json_decode;
+
+use const true;
 
 /**
  * Class ImportIoWebhook

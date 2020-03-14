@@ -1,13 +1,12 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\ImportIo;
 
 use McMatters\ImportIo\Endpoints\{
     Api, Data, Extraction, Rss, Run, Schedule, Store
 };
-use function ucfirst;
 
 /**
  * Class ImportIoClient
@@ -37,74 +36,72 @@ class ImportIoClient
     }
 
     /**
-     * @return Api
+     * @return \McMatters\ImportIo\Endpoints\Api
      */
     public function api(): Api
     {
-        return $this->endpoint(__FUNCTION__);
+        return $this->endpoint(Api::class);
     }
 
     /**
-     * @return Data
+     * @return \McMatters\ImportIo\Endpoints\Data
      */
     public function data(): Data
     {
-        return $this->endpoint(__FUNCTION__);
+        return $this->endpoint(Data::class);
     }
 
     /**
-     * @return Extraction
+     * @return \McMatters\ImportIo\Endpoints\Extraction
      */
     public function extraction(): Extraction
     {
-        return $this->endpoint(__FUNCTION__);
+        return $this->endpoint(Extraction::class);
     }
 
     /**
-     * @return Rss
+     * @return \McMatters\ImportIo\Endpoints\Rss
      */
     public function rss(): Rss
     {
-        return $this->endpoint(__FUNCTION__);
+        return $this->endpoint(Rss::class);
     }
 
     /**
-     * @return Run
+     * @return \McMatters\ImportIo\Endpoints\Run
      */
     public function run(): Run
     {
-        return $this->endpoint(__FUNCTION__);
+        return $this->endpoint(Run::class);
     }
 
     /**
-     * @return Schedule
+     * @return \McMatters\ImportIo\Endpoints\Schedule
      */
     public function schedule(): Schedule
     {
-        return $this->endpoint(__FUNCTION__);
+        return $this->endpoint(Schedule::class);
     }
 
     /**
-     * @return Store
+     * @return \McMatters\ImportIo\Endpoints\Store
      */
     public function store(): Store
     {
-        return $this->endpoint(__FUNCTION__);
+        return $this->endpoint(Store::class);
     }
 
     /**
-     * @param string $name
+     * @param string $class
      *
      * @return mixed
      */
-    protected function endpoint(string $name)
+    protected function endpoint(string $class)
     {
-        if (!isset($this->endpoints[$name])) {
-            $class = __NAMESPACE__.'\\Endpoints\\'.ucfirst($name);
-
-            $this->endpoints[$name] = new $class($this->apiKey);
+        if (!isset($this->endpoints[$class])) {
+            $this->endpoints[$class] = new $class($this->apiKey);
         }
 
-        return $this->endpoints[$name];
+        return $this->endpoints[$class];
     }
 }

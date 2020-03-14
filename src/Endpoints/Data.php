@@ -1,17 +1,16 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\ImportIo\Endpoints;
 
-use InvalidArgumentException;
-use McMatters\ImportIo\Exceptions\ImportIoException;
 use McMatters\ImportIo\Helpers\Validation;
 use McMatters\Ticl\Enums\HttpStatusCode;
 use Throwable;
-use const false, true;
-use const CASE_LOWER;
+
 use function array_change_key_case;
+
+use const false, true, CASE_LOWER;
 
 /**
  * Class Data
@@ -30,8 +29,8 @@ class Data extends Endpoint
      * @param string $type
      *
      * @return array|string
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function getLatestData(
         string $extractorId,

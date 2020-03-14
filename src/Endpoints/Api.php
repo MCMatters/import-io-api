@@ -1,11 +1,9 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\ImportIo\Endpoints;
 
-use InvalidArgumentException;
-use McMatters\ImportIo\Exceptions\ImportIoException;
 use McMatters\ImportIo\Helpers\Validation;
 
 /**
@@ -24,8 +22,8 @@ class Api extends Endpoint
      * @param string $reportId
      *
      * @return mixed
-     * @throws InvalidArgumentException
-     * @throws ImportIoException
+     *
+     * @throws \InvalidArgumentException
      */
     public function launchReportRun(string $reportId)
     {

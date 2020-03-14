@@ -1,10 +1,9 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\ImportIo\Tests;
 
-use McMatters\ImportIo\Exceptions\ImportIoException;
 use Throwable;
 
 /**
@@ -15,7 +14,6 @@ use Throwable;
 class ScheduleTest extends TestCase
 {
     /**
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -27,7 +25,6 @@ class ScheduleTest extends TestCase
     }
 
     /**
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \InvalidArgumentException
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
@@ -44,7 +41,6 @@ class ScheduleTest extends TestCase
     }
 
     /**
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \InvalidArgumentException
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
@@ -58,7 +54,6 @@ class ScheduleTest extends TestCase
     }
 
     /**
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \InvalidArgumentException
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
@@ -82,7 +77,6 @@ class ScheduleTest extends TestCase
     }
 
     /**
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \InvalidArgumentException
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
@@ -95,12 +89,11 @@ class ScheduleTest extends TestCase
     }
 
     /**
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \InvalidArgumentException
      */
     public function testDeleteWithException()
     {
-        $this->expectException(ImportIoException::class);
+        $this->expectException(Throwable::class);
 
         $this->client->schedule()->delete($this->extractorId);
         $this->client->schedule()->delete($this->extractorId);

@@ -1,16 +1,16 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\ImportIo\Endpoints;
 
 use DateTime;
-use InvalidArgumentException;
-use McMatters\ImportIo\Exceptions\ImportIoException;
 use McMatters\ImportIo\Helpers\Validation;
 use Throwable;
-use const false, null, true;
+
 use function array_filter, array_merge, ceil, count, implode, json_decode, min, uasort;
+
+use const false, null, true;
 
 /**
  * Class Store
@@ -19,17 +19,17 @@ use function array_filter, array_merge, ceil, count, implode, json_decode, min, 
  */
 class Store extends Endpoint
 {
-    const STATE_PENDING = 'PENDING';
-    const STATE_FINISHED = 'FINISHED';
-    const STATE_FAILED = 'FAILED';
+    public const STATE_PENDING = 'PENDING';
+    public const STATE_FINISHED = 'FINISHED';
+    public const STATE_FAILED = 'FAILED';
 
-    const TYPE_REMOVED = 'REMOVED';
-    const TYPE_ADDED = 'ADDED';
-    const TYPE_SKIPPED = 'SKIPPED';
-    const TYPE_CHANGED = 'CHANGED';
+    public const TYPE_REMOVED = 'REMOVED';
+    public const TYPE_ADDED = 'ADDED';
+    public const TYPE_SKIPPED = 'SKIPPED';
+    public const TYPE_CHANGED = 'CHANGED';
 
-    const LIMIT_PAGE = 15;
-    const LIMIT_COUNT = 1000;
+    public const LIMIT_PAGE = 15;
+    public const LIMIT_COUNT = 1000;
 
     /**
      * @var string
@@ -41,8 +41,8 @@ class Store extends Endpoint
      * @param array $filters
      *
      * @return array
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function searchCrawlRuns(
         string $extractorId = null,
@@ -63,8 +63,8 @@ class Store extends Endpoint
      * @param array $filters
      *
      * @return array
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function getFirstCrawlRun(
         string $extractorId = null,
@@ -92,8 +92,8 @@ class Store extends Endpoint
      * @param string|null $extractorId
      *
      * @return array
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function getLastFinishedCrawlRun(string $extractorId = null): array
     {
@@ -110,7 +110,6 @@ class Store extends Endpoint
      * @param array $filters
      *
      * @return array
-     * @throws ImportIoException
      */
     public function searchExtractors(array $filters = []): array
     {
@@ -131,8 +130,8 @@ class Store extends Endpoint
      * @param string $extractorId
      *
      * @return array
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function getExtractorInfo(string $extractorId): array
     {
@@ -145,8 +144,8 @@ class Store extends Endpoint
      * @param string $crawlRunId
      *
      * @return array
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function getCrawlRunProgress(string $crawlRunId): array
     {
@@ -161,8 +160,8 @@ class Store extends Endpoint
      * @param string $type
      *
      * @return mixed
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function downloadFileForCrawlRun(
         string $crawlRunId,
@@ -185,8 +184,8 @@ class Store extends Endpoint
      * @param array $urlList
      *
      * @return array
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function uploadUrlListForExtractor(
         string $extractorId,
@@ -208,8 +207,8 @@ class Store extends Endpoint
      * @param string $attachmentId
      *
      * @return mixed
-     * @throws InvalidArgumentException
-     * @throws ImportIoException
+     *
+     * @throws \InvalidArgumentException
      */
     public function downloadUrlListFromExtractor(
         string $extractorId,
@@ -227,14 +226,15 @@ class Store extends Endpoint
 
     /**
      * @param string $extractorId
+     * @param array $filters
      *
      * @return array
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
-    public function getAllCrawlRuns(string $extractorId): array
+    public function getAllCrawlRuns(string $extractorId, array $filters = []): array
     {
-        return $this->getAllEntities('searchCrawlRuns', [$extractorId]);
+        return $this->getAllEntities('searchCrawlRuns', [$extractorId, $filters]);
     }
 
     /**
@@ -242,22 +242,20 @@ class Store extends Endpoint
      * @param bool $flatten
      *
      * @return array
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function getAllDataFromCrawlRuns(
         string $extractorId,
         bool $flatten = true
     ): array {
-        $crawlRuns = $this->getAllCrawlRuns($extractorId);
+        $crawlRuns = $this->getAllCrawlRuns($extractorId, [
+            'state' => self::STATE_FINISHED,
+        ]);
 
         $data = [];
 
         foreach ($crawlRuns as $crawlRun) {
-            if ($crawlRun['fields']['state'] !== self::STATE_FINISHED) {
-                continue;
-            }
-
             $data[] = $this->downloadFileForCrawlRun(
                 $crawlRun['_id'],
                 $crawlRun['fields']['json']
@@ -271,8 +269,8 @@ class Store extends Endpoint
      * @param string $reportId
      *
      * @return array
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function getReport(string $reportId): array
     {
@@ -285,7 +283,8 @@ class Store extends Endpoint
      * @param string $extractorId
      *
      * @return array
-     * @throws Throwable
+     *
+     * @throws \Throwable
      */
     public function getLastReportForExtractor(string $extractorId): array
     {
@@ -315,7 +314,7 @@ class Store extends Endpoint
             }
         }
 
-        uasort($reports, function ($a, $b) {
+        uasort($reports, static function ($a, $b) {
             return $b['time'] <=> $a['time'];
         });
 
@@ -335,8 +334,8 @@ class Store extends Endpoint
      * @param array $columns
      *
      * @return array
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function createReport(
         string $extractorId,
@@ -369,8 +368,8 @@ class Store extends Endpoint
      * @param array $filters
      *
      * @return array
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function searchReportRuns(
         string $reportId = null,
@@ -391,8 +390,8 @@ class Store extends Endpoint
      * @param array $filters
      *
      * @return array
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function getFirstReportRun(
         string $reportId = null,
@@ -420,8 +419,8 @@ class Store extends Endpoint
      * @param string|null $reportId
      *
      * @return array
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function getLastFinishedReportRun(string $reportId = null): array
     {
@@ -467,7 +466,8 @@ class Store extends Endpoint
      * @param int $attempts
      *
      * @return array
-     * @throws Throwable
+     *
+     * @throws \Throwable
      */
     public function getAllReportRunsForExtractor(
         string $extractorId,
@@ -490,8 +490,8 @@ class Store extends Endpoint
      * @param string $reportRunId
      *
      * @return array
-     * @throws InvalidArgumentException
-     * @throws ImportIoException
+     *
+     * @throws \InvalidArgumentException
      */
     public function getReportRun(string $reportRunId): array
     {
@@ -506,8 +506,8 @@ class Store extends Endpoint
      * @param string $type
      *
      * @return mixed
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function downloadFileForReportRun(
         string $reportRunId,
@@ -531,8 +531,8 @@ class Store extends Endpoint
      * @param array $headers
      *
      * @return mixed
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function addWebhookUrlToExtractor(
         string $extractorId,
@@ -578,13 +578,15 @@ class Store extends Endpoint
         do {
             $arguments = array_merge(
                 $args,
-                [$filters + [
+                [
+                    $filters + [
                         '_page' => $page,
                         '_perpage' => min($remaining ?? self::LIMIT_COUNT, self::LIMIT_COUNT),
                         '_sort' => '_meta.creationTimestamp',
                         '_mine' => 'true',
                         '_sortDirection' => $oldest ? 'DESC' : 'ASC',
-                    ]]
+                    ]
+                ]
             );
 
             $content = $this->$method(...$arguments);

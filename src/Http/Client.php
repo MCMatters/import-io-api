@@ -1,17 +1,16 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\ImportIo\Http;
 
 use InvalidArgumentException;
-use McMatters\ImportIo\Exceptions\ImportIoException;
 use McMatters\Ticl\Client as HttpClient;
 use McMatters\Ticl\Http\Response;
-use Throwable;
-use const PHP_EOL;
+
+use function explode, json_decode, in_array, simplexml_load_string, strtolower;
+
 use const null, true;
-use function explode, json_decode, in_array, is_array, is_callable, simplexml_load_string, strtolower;
 
 /**
  * Class Client
@@ -21,7 +20,7 @@ use function explode, json_decode, in_array, is_array, is_callable, simplexml_lo
 class Client
 {
     /**
-     * @var HttpClient
+     * @var \McMatters\Ticl\Client
      */
     protected $httpClient;
 
@@ -36,6 +35,7 @@ class Client
         $this->httpClient = new HttpClient([
             'base_uri' => "https://{$subDomain}.import.io/",
             'query' => ['_apikey' => $apiKey],
+            'keep_alive' => true,
         ]);
     }
 
@@ -62,27 +62,20 @@ class Client
      * @param array $query
      * @param string $accept
      *
-     * @return mixed
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @return array|string
      */
     public function get(string $uri, array $query = [], string $accept = 'json')
     {
-        try {
-            return $this->parseResponse(
-                $this->httpClient->get(
-                    $uri,
-                    [
-                        'query' => $query,
-                        'headers' => [
-                            'Accept' => $this->getAcceptHeader($accept),
-                        ],
-                    ]
-                ),
-                $accept
-            );
-        } catch (Throwable $e) {
-            $this->throwException($e);
-        }
+        return $this->parseResponse(
+            $this->httpClient->get(
+                $uri,
+                [
+                    'query' => $query,
+                    'headers' => ['Accept' => $this->getAcceptHeader($accept)],
+                ]
+            ),
+            $accept
+        );
     }
 
     /**
@@ -90,27 +83,20 @@ class Client
      * @param array|string|null $body
      * @param string $accept
      *
-     * @return mixed
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @return array|string
      */
     public function post(string $uri, $body = null, string $accept = 'json')
     {
-        try {
-            return $this->parseResponse(
-                $this->httpClient->post(
-                    $uri,
-                    [
-                        'json' => $body ?? [],
-                        'headers' => [
-                            'Accept' => $this->getAcceptHeader($accept),
-                        ],
-                    ]
-                ),
-                $accept
-            );
-        } catch (Throwable $e) {
-            $this->throwException($e);
-        }
+        return $this->parseResponse(
+            $this->httpClient->post(
+                $uri,
+                [
+                    'json' => $body ?? [],
+                    'headers' => ['Accept' => $this->getAcceptHeader($accept)],
+                ]
+            ),
+            $accept
+        );
     }
 
     /**
@@ -118,27 +104,20 @@ class Client
      * @param array|string|null $body
      * @param string $accept
      *
-     * @return mixed
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @return array|string
      */
     public function put(string $uri, $body = null, string $accept = 'json')
     {
-        try {
-            return $this->parseResponse(
-                $this->httpClient->put(
-                    $uri,
-                    [
-                        'json' => $body ?? [],
-                        'headers' => [
-                            'Accept' => $this->getAcceptHeader($accept),
-                        ],
-                    ]
-                ),
-                $accept
-            );
-        } catch (Throwable $e) {
-            $this->throwException($e);
-        }
+        return $this->parseResponse(
+            $this->httpClient->put(
+                $uri,
+                [
+                    'json' => $body ?? [],
+                    'headers' => ['Accept' => $this->getAcceptHeader($accept)],
+                ]
+            ),
+            $accept
+        );
     }
 
     /**
@@ -146,42 +125,30 @@ class Client
      * @param mixed $body
      * @param string $accept
      *
-     * @return mixed
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
+     * @return array|string
      */
     public function patch(string $uri, $body = null, string $accept = 'json')
     {
-        try {
-            return $this->parseResponse(
-                $this->httpClient->patch(
-                    $uri,
-                    [
-                        'json' => $body ?? [],
-                        'headers' => [
-                            'Accept' => $this->getAcceptHeader($accept),
-                        ],
-                    ]
-                ),
-                $accept
-            );
-        } catch (Throwable $e) {
-            $this->throwException($e);
-        }
+        return $this->parseResponse(
+            $this->httpClient->patch(
+                $uri,
+                [
+                    'json' => $body ?? [],
+                    'headers' => ['Accept' => $this->getAcceptHeader($accept)],
+                ]
+            ),
+            $accept
+        );
     }
 
     /**
      * @param string $uri
      *
      * @return int
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      */
     public function delete(string $uri): int
     {
-        try {
-            return $this->httpClient->delete($uri)->getStatusCode();
-        } catch (Throwable $e) {
-            $this->throwException($e);
-        }
+        return $this->httpClient->delete($uri)->getStatusCode();
     }
 
     /**
@@ -189,15 +156,10 @@ class Client
      * @param array $options
      *
      * @return \McMatters\Ticl\Http\Response
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      */
     public function head(string $uri, array $options = []): Response
     {
-        try {
-            return $this->httpClient->head($uri, $options);
-        } catch (Throwable $e) {
-            $this->throwException($e);
-        }
+        return $this->httpClient->head($uri, $options);
     }
 
     /**
@@ -222,10 +184,11 @@ class Client
     }
 
     /**
-     * @param Response $response
+     * @param \McMatters\Ticl\Http\Response $response
      * @param string $accept
      *
-     * @return mixed
+     * @return array|string
+     *
      * @throws \McMatters\Ticl\Exceptions\JsonDecodingException
      */
     protected function parseResponse(
@@ -256,60 +219,16 @@ class Client
      */
     protected function parseNdJson(string $response): array
     {
-        $parsed = [];
-        $lines = explode("\n", $response);
+        $rows = [];
 
-        foreach ($lines as $line) {
+        foreach (explode("\n", $response) as $line) {
             if (empty($line)) {
                 continue;
             }
 
-            $parsed[] = json_decode($line, true);
+            $rows[] = json_decode($line, true);
         }
 
-        return $parsed;
-    }
-
-    /**
-     * @param \Throwable $e
-     *
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
-     */
-    protected function throwException(Throwable $e)
-    {
-        throw new ImportIoException(
-            $this->getExceptionMessage($e),
-            (int) $e->getCode()
-        );
-    }
-
-    /**
-     * @param Throwable $e
-     *
-     * @return string
-     */
-    protected function getExceptionMessage(Throwable $e): string
-    {
-        $message = '';
-
-        if (is_callable([$e, 'asJson'])) {
-            try {
-                $json = $e->asJson();
-
-                if (is_array($json)) {
-                    if (isset($json['message'])) {
-                        $message = "Message: {$json['message']}";
-                    }
-
-                    if (isset($json['details'])) {
-                        $message .= PHP_EOL."Details: {$json['details']}";
-                    }
-                }
-            } catch (Throwable $x) {
-                $message = $e->getMessage();
-            }
-        }
-
-        return $message ?: $e->getMessage();
+        return $rows;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\ImportIo\Endpoints;
 
@@ -16,10 +16,10 @@ abstract class Endpoint
     /**
      * @var string
      */
-    protected $subDomain = '';
+    protected $subDomain;
 
     /**
-     * @var Client
+     * @var \McMatters\ImportIo\Http\Client
      */
     protected $httpClient;
 

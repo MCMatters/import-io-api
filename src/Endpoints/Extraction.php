@@ -1,11 +1,9 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\ImportIo\Endpoints;
 
-use InvalidArgumentException;
-use McMatters\ImportIo\Exceptions\ImportIoException;
 use McMatters\ImportIo\Helpers\Validation;
 
 /**
@@ -25,8 +23,8 @@ class Extraction extends Endpoint
      * @param string $url
      *
      * @return array
-     * @throws ImportIoException
-     * @throws InvalidArgumentException
+     *
+     * @throws \InvalidArgumentException
      */
     public function extractorQuery(string $extractorId, string $url): array
     {

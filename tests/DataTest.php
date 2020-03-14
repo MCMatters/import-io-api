@@ -1,10 +1,12 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\ImportIo\Tests;
 
 use InvalidArgumentException;
+
+use function md5, random_bytes;
 
 /**
  * Class DataTest
@@ -15,7 +17,6 @@ class DataTest extends TestCase
 {
     /**
      * @throws \InvalidArgumentException
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -28,7 +29,6 @@ class DataTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -41,7 +41,6 @@ class DataTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      */
     public function testGetLatestDataWithWrongType()
     {
@@ -52,7 +51,6 @@ class DataTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
-     * @throws \McMatters\ImportIo\Exceptions\ImportIoException
      * @throws \Exception
      */
     public function testGetLatestDataWithWrongExtractorId()
