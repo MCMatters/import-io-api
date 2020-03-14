@@ -170,8 +170,8 @@ class Client
     protected function getAcceptHeader(string $type = 'json'): string
     {
         $types = [
-            'json' => 'application/json',
-            'jsonl' => 'application/json',
+            'json' => 'application/json;charset=UTF-8',
+            'jsonl' => 'application/json;charset=UTF-8',
             'xml' => 'application/xml',
             'zip' => 'application/zip',
             'pdf' => 'application/pdf',

@@ -29,35 +29,6 @@ class ScheduleTest extends TestCase
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    public function testCreate()
-    {
-        $interval = '15 * * * *';
-
-        $data = $this->client->schedule()->create($this->extractorId, $interval);
-
-        $this->assertNotEmpty($data);
-        $this->assertSame($this->extractorId, $data['extractorId']);
-        $this->assertSame($interval, $data['interval']);
-    }
-
-    /**
-     * @throws \InvalidArgumentException
-     * @throws \PHPUnit\Framework\ExpectationFailedException
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
-     */
-    public function testGetByExtractorId()
-    {
-        $data = $this->client->schedule()->getByExtractorId($this->extractorId);
-
-        $this->assertNotEmpty($data);
-        $this->assertSame($this->extractorId, $data['extractorId']);
-    }
-
-    /**
-     * @throws \InvalidArgumentException
-     * @throws \PHPUnit\Framework\ExpectationFailedException
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
-     */
     public function testGetByExtractorIdWithCreating()
     {
         // Remove schedule before.
