@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace McMatters\ImportIo\Endpoints;
 
-use DateTime;
 use McMatters\ImportIo\Helpers\Validation;
 use Throwable;
 
@@ -295,32 +294,24 @@ class Store extends Endpoint
                 continue;
             }
 
+            $timestamp = $reportRun['fields']['_meta']['creationTimestamp'];
+
             if (!isset($reports[$reportRun['fields']['reportId']])) {
                 $reports[$reportRun['fields']['reportId']] = [
                     'name' => $reportRun['fields']['name'],
                     'token' => $reportRun['fields']['reportId'],
-                    'time' => (new DateTime())->setTimestamp(
-                        (int) ($reportRun['fields']['_meta']['creationTimestamp'] / 1000)
-                    ),
+                    'timestamp' => $timestamp,
                 ];
-            } else {
-                $newDate = (new DateTime())->setTimestamp(
-                    (int) ($reportRun['fields']['_meta']['creationTimestamp'] / 1000)
-                );
-
-                if ($newDate > $reports[$reportRun['fields']['reportId']]['time']) {
-                    $reports[$reportRun['fields']['reportId']]['time'] = $newDate;
-                }
+            } elseif ($timestamp > $reports[$reportRun['fields']['reportId']]['timestamp']) {
+                $reports[$reportRun['fields']['reportId']]['timestamp'] = $timestamp;
             }
         }
 
         uasort($reports, static function ($a, $b) {
-            return $b['time'] <=> $a['time'];
+            return $b['timestamp'] <=> $a['timestamp'];
         });
 
         foreach ($reports as $report) {
-            unset($report['time']);
-
             return $report;
         }
 
