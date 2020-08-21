@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace McMatters\ImportIo\Http;
 
 use InvalidArgumentException;
+use McMatters\ImportIo\Utilities\Retry;
 use McMatters\Ticl\Client as HttpClient;
 use McMatters\Ticl\Http\Response;
 
@@ -25,18 +26,26 @@ class Client
     protected $httpClient;
 
     /**
+     * @var \McMatters\ImportIo\Utilities\Retry|null
+     */
+    protected $retry;
+
+    /**
      * Client constructor.
      *
      * @param string $subDomain
      * @param string $apiKey
+     * @param \McMatters\ImportIo\Utilities\Retry|null $retry
      */
-    public function __construct(string $subDomain, string $apiKey)
+    public function __construct(string $subDomain, string $apiKey, Retry $retry = null)
     {
         $this->httpClient = new HttpClient([
             'base_uri' => "https://{$subDomain}.import.io/",
             'query' => ['_apikey' => $apiKey],
             'keep_alive' => true,
         ]);
+
+        $this->retry = $retry;
     }
 
     /**
@@ -45,13 +54,23 @@ class Client
      * @param array $options
      *
      * @return mixed
+     *
+     * @throws \Throwable
      */
     public function request(string $method, string $uri, array $options = [])
     {
+        $methods = ['head', 'get', 'post', 'put', 'patch', 'delete'];
+
         $method = strtolower($method);
 
-        if (!in_array($method, ['head', 'get', 'post', 'patch', 'delete'], true)) {
+        if (!in_array($method, $methods, true)) {
             throw new InvalidArgumentException('Wrong method passed');
+        }
+
+        if ($this->retry) {
+            return $this->retry->run(function () use ($method, $uri, $options) {
+                return $this->httpClient->{$method}($uri, $options);
+            });
         }
 
         return $this->httpClient->{$method}($uri, $options);
@@ -63,17 +82,16 @@ class Client
      * @param string $accept
      *
      * @return array|string
+     *
+     * @throws \Throwable
      */
     public function get(string $uri, array $query = [], string $accept = 'json')
     {
         return $this->parseResponse(
-            $this->httpClient->get(
-                $uri,
-                [
-                    'query' => $query,
-                    'headers' => ['Accept' => $this->getAcceptHeader($accept)],
-                ]
-            ),
+            $this->request('get', $uri, [
+                'query' => $query,
+                'headers' => ['Accept' => $this->getAcceptHeader($accept)],
+            ]),
             $accept
         );
     }
@@ -84,17 +102,16 @@ class Client
      * @param string $accept
      *
      * @return array|string
+     *
+     * @throws \Throwable
      */
     public function post(string $uri, $body = null, string $accept = 'json')
     {
         return $this->parseResponse(
-            $this->httpClient->post(
-                $uri,
-                [
-                    'json' => $body ?? [],
-                    'headers' => ['Accept' => $this->getAcceptHeader($accept)],
-                ]
-            ),
+            $this->request('post', $uri, [
+                'json' => $body ?? [],
+                'headers' => ['Accept' => $this->getAcceptHeader($accept)],
+            ]),
             $accept
         );
     }
@@ -105,17 +122,16 @@ class Client
      * @param string $accept
      *
      * @return array|string
+     *
+     * @throws \Throwable
      */
     public function put(string $uri, $body = null, string $accept = 'json')
     {
         return $this->parseResponse(
-            $this->httpClient->put(
-                $uri,
-                [
-                    'json' => $body ?? [],
-                    'headers' => ['Accept' => $this->getAcceptHeader($accept)],
-                ]
-            ),
+            $this->request('put', $uri, [
+                'json' => $body ?? [],
+                'headers' => ['Accept' => $this->getAcceptHeader($accept)],
+            ]),
             $accept
         );
     }
@@ -126,17 +142,16 @@ class Client
      * @param string $accept
      *
      * @return array|string
+     *
+     * @throws \Throwable
      */
     public function patch(string $uri, $body = null, string $accept = 'json')
     {
         return $this->parseResponse(
-            $this->httpClient->patch(
-                $uri,
-                [
-                    'json' => $body ?? [],
-                    'headers' => ['Accept' => $this->getAcceptHeader($accept)],
-                ]
-            ),
+            $this->request('patch', $uri, [
+                'json' => $body ?? [],
+                'headers' => ['Accept' => $this->getAcceptHeader($accept)],
+            ]),
             $accept
         );
     }
@@ -145,10 +160,12 @@ class Client
      * @param string $uri
      *
      * @return int
+     *
+     * @throws \Throwable
      */
     public function delete(string $uri): int
     {
-        return $this->httpClient->delete($uri)->getStatusCode();
+        return $this->request('delete', $uri)->getStatusCode();
     }
 
     /**
@@ -156,10 +173,12 @@ class Client
      * @param array $options
      *
      * @return \McMatters\Ticl\Http\Response
+     *
+     * @throws \Throwable
      */
     public function head(string $uri, array $options = []): Response
     {
-        return $this->httpClient->head($uri, $options);
+        return $this->request('head', $uri, $options);
     }
 
     /**

@@ -7,6 +7,9 @@ namespace McMatters\ImportIo;
 use McMatters\ImportIo\Endpoints\{
     Api, Data, Extraction, Rss, Run, Schedule, Store
 };
+use McMatters\ImportIo\Utilities\Retry;
+
+use const null;
 
 /**
  * Class ImportIoClient
@@ -21,6 +24,11 @@ class ImportIoClient
     protected $apiKey;
 
     /**
+     * @var \McMatters\ImportIo\Utilities\Retry|null
+     */
+    protected $retry;
+
+    /**
      * @var array
      */
     protected $endpoints = [];
@@ -29,10 +37,12 @@ class ImportIoClient
      * ImportIo constructor.
      *
      * @param string $apiKey
+     * @param \McMatters\ImportIo\Utilities\Retry|null $retry
      */
-    public function __construct(string $apiKey)
+    public function __construct(string $apiKey, Retry $retry = null)
     {
         $this->apiKey = $apiKey;
+        $this->retry = $retry;
     }
 
     /**
@@ -99,7 +109,7 @@ class ImportIoClient
     protected function endpoint(string $class)
     {
         if (!isset($this->endpoints[$class])) {
-            $this->endpoints[$class] = new $class($this->apiKey);
+            $this->endpoints[$class] = new $class($this->apiKey, $this->retry);
         }
 
         return $this->endpoints[$class];
