@@ -565,18 +565,18 @@ class Store extends Endpoint
     }
 
     /**
-     * @param string $extractorId
+     * @param string $configId
      *
      * @return array
      *
      * @throws \InvalidArgumentException
      * @throws \Throwable
      */
-    public function getRuntimeConfiguration(string $extractorId): array
+    public function getRuntimeConfiguration(string $configId): array
     {
-        Validation::checkExtractorId($extractorId);
+        Validation::checkUuid($configId, 'configId');
 
-        return $this->httpClient->get("store/runtimeconfiguration/{$extractorId}");
+        return $this->httpClient->get("store/runtimeconfiguration/{$configId}");
     }
 
     /**
