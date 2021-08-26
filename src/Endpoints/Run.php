@@ -24,6 +24,7 @@ class Run extends Endpoint
      * @return string
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function startCrawl(string $extractorId): string
     {
@@ -40,6 +41,7 @@ class Run extends Endpoint
      * @return string
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function cancelCrawl(string $extractorId): string
     {

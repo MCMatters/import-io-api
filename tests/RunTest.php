@@ -27,6 +27,7 @@ class RunTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -42,6 +43,7 @@ class RunTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function testStartCrawlException()
     {
@@ -54,6 +56,7 @@ class RunTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function testCancelCrawlException()
     {

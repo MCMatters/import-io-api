@@ -13,6 +13,7 @@ class ExtractionTest extends TestCase
 {
     /**
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */

@@ -18,6 +18,7 @@ class StoreTest extends TestCase
 {
     /**
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -53,6 +54,7 @@ class StoreTest extends TestCase
     /**
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
+     * @throws \Throwable
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -69,6 +71,7 @@ class StoreTest extends TestCase
     /**
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
+     * @throws \Throwable
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -90,6 +93,7 @@ class StoreTest extends TestCase
     /**
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
+     * @throws \Throwable
      */
     public function testDownloadFileFromCrawlRunWithException()
     {
@@ -106,6 +110,7 @@ class StoreTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -122,6 +127,7 @@ class StoreTest extends TestCase
     /**
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
+     * @throws \Throwable
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -144,6 +150,7 @@ class StoreTest extends TestCase
      *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
+     * @throws \Throwable
      */
     protected function getFirstCrawlRun(string $extractorId = null): array
     {

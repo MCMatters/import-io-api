@@ -25,6 +25,7 @@ class Extraction extends Endpoint
      * @return array
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function extractorQuery(string $extractorId, string $url): array
     {

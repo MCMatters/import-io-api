@@ -22,6 +22,8 @@ class Schedule extends Endpoint
 
     /**
      * @return array
+     *
+     * @throws \Throwable
      */
     public function list(): array
     {
@@ -36,6 +38,7 @@ class Schedule extends Endpoint
      * @return array
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function create(
         string $extractorId,
@@ -59,6 +62,7 @@ class Schedule extends Endpoint
      * @return array
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function getByExtractorId(string $extractorId): array
     {
@@ -73,6 +77,7 @@ class Schedule extends Endpoint
      * @return int
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function delete(string $extractorId): int
     {

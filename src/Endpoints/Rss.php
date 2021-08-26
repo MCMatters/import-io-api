@@ -27,6 +27,7 @@ class Rss extends Endpoint
      * @return array
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function getRuns(string $extractorId): array
     {
@@ -45,6 +46,7 @@ class Rss extends Endpoint
      * @return array
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function getRunsGuids(string $extractorId): array
     {

@@ -42,6 +42,7 @@ class Store extends Endpoint
      * @return array
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function searchCrawlRuns(
         string $extractorId = null,
@@ -64,6 +65,7 @@ class Store extends Endpoint
      * @return array
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function getFirstCrawlRun(
         string $extractorId = null,
@@ -93,6 +95,7 @@ class Store extends Endpoint
      * @return array
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function getLastFinishedCrawlRun(string $extractorId = null): array
     {
@@ -109,6 +112,8 @@ class Store extends Endpoint
      * @param array $filters
      *
      * @return array
+     *
+     * @throws \Throwable
      */
     public function searchExtractors(array $filters = []): array
     {
@@ -131,6 +136,7 @@ class Store extends Endpoint
      * @return array
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function getExtractorInfo(string $extractorId): array
     {
@@ -145,6 +151,7 @@ class Store extends Endpoint
      * @return array
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function getCrawlRunProgress(string $crawlRunId): array
     {
@@ -158,9 +165,10 @@ class Store extends Endpoint
      * @param string $attachmentId
      * @param string $type
      *
-     * @return mixed
+     * @return array|string
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function downloadFileForCrawlRun(
         string $crawlRunId,
@@ -185,6 +193,7 @@ class Store extends Endpoint
      * @return array
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function uploadUrlListForExtractor(
         string $extractorId,
@@ -205,9 +214,10 @@ class Store extends Endpoint
      * @param string $extractorId
      * @param string $attachmentId
      *
-     * @return mixed
+     * @return array|string
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function downloadUrlListFromExtractor(
         string $extractorId,
@@ -243,6 +253,7 @@ class Store extends Endpoint
      * @return array
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function getAllDataFromCrawlRuns(
         string $extractorId,
@@ -270,6 +281,7 @@ class Store extends Endpoint
      * @return array
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function getReport(string $reportId): array
     {
@@ -327,6 +339,7 @@ class Store extends Endpoint
      * @return array
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function createReport(
         string $extractorId,
@@ -361,6 +374,7 @@ class Store extends Endpoint
      * @return array
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function searchReportRuns(
         string $reportId = null,
@@ -383,6 +397,7 @@ class Store extends Endpoint
      * @return array
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function getFirstReportRun(
         string $reportId = null,
@@ -412,6 +427,7 @@ class Store extends Endpoint
      * @return array
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function getLastFinishedReportRun(string $reportId = null): array
     {
@@ -483,6 +499,7 @@ class Store extends Endpoint
      * @return array
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function getReportRun(string $reportRunId): array
     {
@@ -496,9 +513,10 @@ class Store extends Endpoint
      * @param string $attachmentId
      * @param string $type
      *
-     * @return mixed
+     * @return array|string
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function downloadFileForReportRun(
         string $reportRunId,
@@ -521,9 +539,10 @@ class Store extends Endpoint
      * @param string $url
      * @param array $headers
      *
-     * @return mixed
+     * @return array|string
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function addWebhookUrlToExtractor(
         string $extractorId,
@@ -542,6 +561,40 @@ class Store extends Endpoint
                     ],
                 ],
             ]
+        );
+    }
+
+    /**
+     * @param string $extractorId
+     *
+     * @return array
+     *
+     * @throws \InvalidArgumentException
+     * @throws \Throwable
+     */
+    public function getRuntimeConfiguration(string $extractorId): array
+    {
+        Validation::checkExtractorId($extractorId);
+
+        return $this->httpClient->get("store/runtimeconfiguration/{$extractorId}");
+    }
+
+    /**
+     * @param string $extractorId
+     * @param array $body
+     *
+     * @return array
+     *
+     * @throws \InvalidArgumentException
+     * @throws \Throwable
+     */
+    public function updateExtractor(string $extractorId, array $body): array
+    {
+        Validation::checkExtractorId($extractorId);
+
+        return $this->httpClient->patch(
+            "store/extractor/{$extractorId}",
+            $body
         );
     }
 
@@ -602,7 +655,7 @@ class Store extends Endpoint
         } while (
             $content['hits']['total'] > 0 &&
             ($content['hits']['total'] > $processed && $page <= self::LIMIT_PAGE) &&
-            ((null !== $remaining && $remaining) || null === $remaining)
+            ($remaining || null === $remaining)
         );
 
         if ($maxPages > self::LIMIT_PAGE && null === $remaining) {

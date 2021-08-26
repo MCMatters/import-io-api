@@ -31,6 +31,7 @@ class Data extends Endpoint
      * @return array|string
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function getLatestData(
         string $extractorId,
@@ -50,6 +51,8 @@ class Data extends Endpoint
      * @param string $extractorId
      *
      * @return bool
+     *
+     * @throws \Throwable
      */
     public function checkDataAccessibility(string $extractorId): bool
     {

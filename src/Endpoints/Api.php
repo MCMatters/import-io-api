@@ -21,9 +21,10 @@ class Api extends Endpoint
     /**
      * @param string $reportId
      *
-     * @return mixed
+     * @return array|string
      *
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function launchReportRun(string $reportId)
     {

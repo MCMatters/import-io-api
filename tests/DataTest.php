@@ -17,6 +17,7 @@ class DataTest extends TestCase
 {
     /**
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -29,6 +30,7 @@ class DataTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -41,6 +43,7 @@ class DataTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function testGetLatestDataWithWrongType()
     {
@@ -51,7 +54,7 @@ class DataTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
-     * @throws \Exception
+     * @throws \Throwable
      */
     public function testGetLatestDataWithWrongExtractorId()
     {

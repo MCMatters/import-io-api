@@ -14,6 +14,7 @@ use Throwable;
 class ScheduleTest extends TestCase
 {
     /**
+     * @throws \Throwable
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -26,6 +27,7 @@ class ScheduleTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -49,6 +51,7 @@ class ScheduleTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      * @throws \PHPUnit\Framework\ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
@@ -61,6 +64,7 @@ class ScheduleTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
+     * @throws \Throwable
      */
     public function testDeleteWithException()
     {
