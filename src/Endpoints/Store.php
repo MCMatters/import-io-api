@@ -312,6 +312,7 @@ class Store extends Endpoint
                 $reports[$reportRun['fields']['reportId']] = [
                     'name' => $reportRun['fields']['name'],
                     'token' => $reportRun['fields']['reportId'],
+                    'configId' => $reportRun['fields']['configId'],
                     'timestamp' => $timestamp,
                 ];
             } elseif ($timestamp > $reports[$reportRun['fields']['reportId']]['timestamp']) {
