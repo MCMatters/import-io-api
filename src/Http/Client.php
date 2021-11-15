@@ -11,7 +11,7 @@ use McMatters\Ticl\Http\Response;
 
 use function explode, json_decode, in_array, simplexml_load_string, strtolower;
 
-use const null, true;
+use const null, true, CURLOPT_TIMEOUT, CURLOPT_CONNECTTIMEOUT;
 
 /**
  * Class Client
@@ -43,6 +43,10 @@ class Client
             'base_uri' => "https://{$subDomain}.import.io/",
             'query' => ['_apikey' => $apiKey],
             'keep_alive' => true,
+            'curl' => [
+                CURLOPT_TIMEOUT => 60,
+                CURLOPT_CONNECTTIMEOUT => 60,
+            ],
         ]);
 
         $this->retry = $retry;
