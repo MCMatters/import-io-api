@@ -31,9 +31,18 @@ abstract class Endpoint
      *
      * @param string $apiKey
      * @param \McMatters\ImportIo\Utilities\Retry|null $retry
+     * @param array $httpClientOptions
      */
-    public function __construct(string $apiKey, Retry $retry = null)
-    {
-        $this->httpClient = new Client($this->subDomain, $apiKey, $retry);
+    public function __construct(
+        string $apiKey,
+        Retry $retry = null,
+        array $httpClientOptions = []
+    ) {
+        $this->httpClient = new Client(
+            $this->subDomain,
+            $apiKey,
+            $retry,
+            $httpClientOptions
+        );
     }
 }

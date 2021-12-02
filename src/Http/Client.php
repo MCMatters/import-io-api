@@ -11,7 +11,7 @@ use McMatters\Ticl\Http\Response;
 
 use function explode, json_decode, in_array, simplexml_load_string, strtolower;
 
-use const null, true, CURLOPT_TIMEOUT, CURLOPT_CONNECTTIMEOUT;
+use const null, true, CURLOPT_CONNECTTIMEOUT, CURLOPT_TIMEOUT;
 
 /**
  * Class Client
@@ -36,18 +36,18 @@ class Client
      * @param string $subDomain
      * @param string $apiKey
      * @param \McMatters\ImportIo\Utilities\Retry|null $retry
+     * @param array $httpClientOptions
      */
-    public function __construct(string $subDomain, string $apiKey, Retry $retry = null)
-    {
+    public function __construct(
+        string $subDomain,
+        string $apiKey,
+        Retry $retry = null,
+        array $httpClientOptions = []
+    ) {
         $this->httpClient = new HttpClient([
             'base_uri' => "https://{$subDomain}.import.io/",
-            'query' => ['_apikey' => $apiKey],
-            'keep_alive' => true,
-            'curl' => [
-                CURLOPT_TIMEOUT => 60,
-                CURLOPT_CONNECTTIMEOUT => 60,
-            ],
-        ]);
+            'query' => ['_apikey' => $apiKey]
+        ] + $this->prepareHttpClientOptions($httpClientOptions));
 
         $this->retry = $retry;
     }
@@ -183,6 +183,24 @@ class Client
     public function head(string $uri, array $options = []): Response
     {
         return $this->request('head', $uri, $options);
+    }
+
+    /**
+     * @param array $httpClientOptions
+     *
+     * @return array
+     */
+    protected function prepareHttpClientOptions(array $httpClientOptions = []): array
+    {
+        $defaults = [
+            'keep_alive' => true,
+            'curl' => [
+                CURLOPT_TIMEOUT => 120,
+                CURLOPT_CONNECTTIMEOUT => 120,
+            ],
+        ];
+
+        return $httpClientOptions + $defaults;
     }
 
     /**

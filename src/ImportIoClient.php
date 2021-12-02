@@ -34,15 +34,25 @@ class ImportIoClient
     protected $endpoints = [];
 
     /**
+     * @var array
+     */
+    protected $httpClientOptions = [];
+
+    /**
      * ImportIo constructor.
      *
      * @param string $apiKey
      * @param \McMatters\ImportIo\Utilities\Retry|null $retry
+     * @param array $httpClientOptions
      */
-    public function __construct(string $apiKey, Retry $retry = null)
-    {
+    public function __construct(
+        string $apiKey,
+        Retry $retry = null,
+        array $httpClientOptions = []
+    ) {
         $this->apiKey = $apiKey;
         $this->retry = $retry;
+        $this->httpClientOptions = $httpClientOptions;
     }
 
     /**
@@ -109,7 +119,11 @@ class ImportIoClient
     protected function endpoint(string $class)
     {
         if (!isset($this->endpoints[$class])) {
-            $this->endpoints[$class] = new $class($this->apiKey, $this->retry);
+            $this->endpoints[$class] = new $class(
+                $this->apiKey,
+                $this->retry,
+                $this->httpClientOptions
+            );
         }
 
         return $this->endpoints[$class];
