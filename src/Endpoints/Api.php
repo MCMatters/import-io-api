@@ -32,4 +32,14 @@ class Api extends Endpoint
 
         return $this->httpClient->post("report/{$reportId}/run");
     }
+
+    /**
+     * @return array
+     *
+     * @throws \Throwable
+     */
+    public function getAllExtractors(): array
+    {
+        return $this->httpClient->get('maestro/extractor');
+    }
 }
