@@ -42,7 +42,7 @@ abstract class Endpoint
             $this->subDomain,
             $apiKey,
             $retry,
-            $httpClientOptions
+            $httpClientOptions,
         );
     }
 }

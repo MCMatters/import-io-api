@@ -6,7 +6,9 @@ namespace McMatters\ImportIo;
 
 use InvalidArgumentException;
 
-use function is_array, is_string, json_decode;
+use function is_array;
+use function is_string;
+use function json_decode;
 
 use const true;
 

@@ -1,19 +1,13 @@
 language: php
 
 php:
-  - '7.1'
-  - '7.2'
   - '7.3'
-
-addons:
-  code_climate:
-    repo_token: 1bd5e8a1762c6725a371e488f50abab79f2092beb93ecf10f1f59bf13175e2dd
+  - '7.4'
+  - '8.0'
 
 install: composer install --no-interaction --no-progress --prefer-dist --no-suggest --optimize-autoloader
 
 script: vendor/bin/phpunit
-
-after_success: vendor/bin/test-reporter
 
 notifications:
   email:

@@ -7,9 +7,18 @@ namespace McMatters\ImportIo\Endpoints;
 use McMatters\ImportIo\Helpers\Validation;
 use Throwable;
 
-use function array_filter, array_merge, ceil, count, implode, json_decode, min, uasort;
+use function array_filter;
+use function array_merge;
+use function ceil;
+use function count;
+use function implode;
+use function json_decode;
+use function min;
+use function uasort;
 
-use const false, null, true;
+use const false;
+use const null;
+use const true;
 
 /**
  * Class Store
@@ -54,7 +63,7 @@ class Store extends Endpoint
 
         return $this->httpClient->get(
             'crawlrun/_search',
-            array_filter(['extractorId' => $extractorId] + $filters)
+            array_filter(['extractorId' => $extractorId] + $filters),
         );
     }
 
@@ -73,7 +82,7 @@ class Store extends Endpoint
     ): array {
         $crawlRuns = $this->searchCrawlRuns(
             $extractorId,
-            ['_page' => 1, '_perpage' => 1] + $filters
+            ['_page' => 1, '_perpage' => 1] + $filters,
         );
 
         if (empty($crawlRuns['hits']['hits'])) {
@@ -104,7 +113,7 @@ class Store extends Endpoint
             [
                 '_sort' => '_meta.creationTimestamp',
                 'state' => self::STATE_FINISHED,
-            ]
+            ],
         );
     }
 
@@ -182,7 +191,7 @@ class Store extends Endpoint
         return $this->httpClient->get(
             "crawlRun/{$crawlRunId}/_attachment/{$type}/{$attachmentId}",
             [],
-            $this->getAcceptDownloadType($type)
+            $this->getAcceptDownloadType($type),
         );
     }
 
@@ -204,7 +213,7 @@ class Store extends Endpoint
         $data = $this->httpClient->put(
             "extractor/{$extractorId}/_attachment/urlList",
             implode("\n", $urlList),
-            'plain'
+            'plain',
         );
 
         return json_decode($data, true);
@@ -229,7 +238,7 @@ class Store extends Endpoint
         return $this->httpClient->get(
             "extractor/{$extractorId}/_attachment/urlList/{$attachmentId}",
             [],
-            'plain'
+            'plain',
         );
     }
 
@@ -268,7 +277,7 @@ class Store extends Endpoint
         foreach ($crawlRuns as $crawlRun) {
             $data[] = $this->downloadFileForCrawlRun(
                 $crawlRun['_id'],
-                $crawlRun['fields']['json']
+                $crawlRun['fields']['json'],
             );
         }
 
@@ -387,7 +396,7 @@ class Store extends Endpoint
 
         return $this->httpClient->get(
             'reportRun/_search',
-            array_filter(['reportId' => $reportId] + $filters)
+            array_filter(['reportId' => $reportId] + $filters),
         );
     }
 
@@ -406,7 +415,7 @@ class Store extends Endpoint
     ): array {
         $reportRuns = $this->searchReportRuns(
             $reportId,
-            ['_page' => 1, '_perpage' => 1] + $filters
+            ['_page' => 1, '_perpage' => 1] + $filters,
         );
 
         if (empty($reportRuns['hits']['hits'])) {
@@ -437,7 +446,7 @@ class Store extends Endpoint
             [
                 '_sort' => '_meta.creationTimestamp',
                 'status' => self::STATE_FINISHED,
-            ]
+            ],
         );
     }
 
@@ -531,7 +540,7 @@ class Store extends Endpoint
         return $this->httpClient->get(
             "reportRun/{$reportRunId}/_attachment/{$type}/{$attachmentId}",
             [],
-            $type === 'json' ? 'jsonl' : 'plain'
+            $type === 'json' ? 'jsonl' : 'plain',
         );
     }
 
@@ -561,7 +570,7 @@ class Store extends Endpoint
                         'headers' => $headers,
                     ],
                 ],
-            ]
+            ],
         );
     }
 
@@ -595,7 +604,7 @@ class Store extends Endpoint
 
         return $this->httpClient->patch(
             "store/extractor/{$extractorId}",
-            $body
+            $body,
         );
     }
 
@@ -630,8 +639,8 @@ class Store extends Endpoint
                         '_sort' => '_meta.creationTimestamp',
                         '_mine' => 'true',
                         '_sortDirection' => $oldest ? 'DESC' : 'ASC',
-                    ]
-                ]
+                    ],
+                ],
             );
 
             $content = $this->$method(...$arguments);
@@ -667,9 +676,9 @@ class Store extends Endpoint
                     $args,
                     $filters,
                     $content['hits']['total'] - $processed,
-                    false
+                    false,
                 ),
-                ...$items
+                ...$items,
             );
         }
 

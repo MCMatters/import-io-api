@@ -9,9 +9,16 @@ use McMatters\ImportIo\Utilities\Retry;
 use McMatters\Ticl\Client as HttpClient;
 use McMatters\Ticl\Http\Response;
 
-use function explode, json_decode, in_array, simplexml_load_string, strtolower;
+use function explode;
+use function json_decode;
+use function in_array;
+use function simplexml_load_string;
+use function strtolower;
 
-use const null, true, CURLOPT_CONNECTTIMEOUT, CURLOPT_TIMEOUT;
+use const CURLOPT_CONNECTTIMEOUT;
+use const CURLOPT_TIMEOUT;
+use const null;
+use const true;
 
 /**
  * Class Client
@@ -46,7 +53,7 @@ class Client
     ) {
         $this->httpClient = new HttpClient([
             'base_uri' => "https://{$subDomain}.import.io/",
-            'query' => ['_apikey' => $apiKey]
+            'query' => ['_apikey' => $apiKey],
         ] + $this->prepareHttpClientOptions($httpClientOptions));
 
         $this->retry = $retry;
@@ -96,7 +103,7 @@ class Client
                 'query' => $query,
                 'headers' => ['Accept' => $this->getAcceptHeader($accept)],
             ]),
-            $accept
+            $accept,
         );
     }
 
@@ -116,7 +123,7 @@ class Client
                 'json' => $body ?? [],
                 'headers' => ['Accept' => $this->getAcceptHeader($accept)],
             ]),
-            $accept
+            $accept,
         );
     }
 
@@ -136,7 +143,7 @@ class Client
                 'json' => $body ?? [],
                 'headers' => ['Accept' => $this->getAcceptHeader($accept)],
             ]),
-            $accept
+            $accept,
         );
     }
 
@@ -156,7 +163,7 @@ class Client
                 'json' => $body ?? [],
                 'headers' => ['Accept' => $this->getAcceptHeader($accept)],
             ]),
-            $accept
+            $accept,
         );
     }
 

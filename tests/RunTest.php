@@ -26,12 +26,11 @@ class RunTest extends TestCase
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @return void
+     *
      * @throws \Throwable
-     * @throws \PHPUnit\Framework\ExpectationFailedException
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    public function testStartAndCancelCrawl()
+    public function testStartAndCancelCrawl(): void
     {
         $startCrawlId = $this->client->run()->startCrawl($this->extractorId);
         $cancelCrawlId = $this->client->run()->cancelCrawl($this->extractorId);
@@ -42,10 +41,11 @@ class RunTest extends TestCase
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @return void
+     *
      * @throws \Throwable
      */
-    public function testStartCrawlException()
+    public function testStartCrawlException(): void
     {
         $this->expectException(Throwable::class);
 
@@ -55,10 +55,11 @@ class RunTest extends TestCase
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @return void
+     *
      * @throws \Throwable
      */
-    public function testCancelCrawlException()
+    public function testCancelCrawlException(): void
     {
         $this->expectException(Throwable::class);
 

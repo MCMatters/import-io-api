@@ -6,7 +6,8 @@ namespace McMatters\ImportIo\Helpers;
 
 use InvalidArgumentException;
 
-use function in_array, preg_match;
+use function in_array;
+use function preg_match;
 
 use const true;
 
@@ -89,7 +90,7 @@ class Validation
     {
         $check = preg_match(
             '/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/i',
-            $uuid
+            $uuid,
         );
 
         if (!$check) {
@@ -157,7 +158,7 @@ class Validation
      */
     public static function checkScheduleInterval(string $interval): void
     {
-        if (!preg_match('/^[\s\d\*\/,-]+$/', $interval)) {
+        if (!preg_match('/^[\s\d*\/,-]+$/', $interval)) {
             throw new InvalidArgumentException('Invalid interval was passed');
         }
     }

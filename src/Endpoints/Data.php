@@ -10,7 +10,9 @@ use Throwable;
 
 use function array_change_key_case;
 
-use const false, true, CASE_LOWER;
+use const CASE_LOWER;
+use const false;
+use const true;
 
 /**
  * Class Data
@@ -43,7 +45,7 @@ class Data extends Endpoint
         return $this->httpClient->get(
             "extractor/{$extractorId}/{$type}/latest",
             [],
-            $type === 'json' ? 'jsonl' : 'csv'
+            $type === 'json' ? 'jsonl' : 'csv',
         );
     }
 
@@ -61,20 +63,21 @@ class Data extends Endpoint
         $firstQuery = $this->httpClient->request(
             'get',
             "extractor/{$extractorId}/json/latest",
-            ['follow_redirects' => false]
+            ['follow_redirects' => false],
         );
 
         $firstQueryStatusCode = $firstQuery->getStatusCode();
         $firstQueryHeaders = array_change_key_case($firstQuery->getHeaders(), CASE_LOWER);
 
-        if ($firstQueryStatusCode >= HttpStatusCode::MOVED_PERMANENTLY &&
+        if (
+            $firstQueryStatusCode >= HttpStatusCode::MOVED_PERMANENTLY &&
             $firstQueryStatusCode <= HttpStatusCode::PERMANENT_REDIRECT &&
             !empty($firstQueryHeaders['location'])
         ) {
             try {
                 $this->httpClient->head(
                     $firstQueryHeaders['location'],
-                    ['skip_base_uri' => true]
+                    ['skip_base_uri' => true],
                 );
 
                 return true;

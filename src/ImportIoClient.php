@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace McMatters\ImportIo;
 
-use McMatters\ImportIo\Endpoints\{
-    Api, Data, Extraction, Rss, Run, Schedule, Store
-};
+use McMatters\ImportIo\Endpoints\Api;
+use McMatters\ImportIo\Endpoints\Billing;
+use McMatters\ImportIo\Endpoints\Data;
+use McMatters\ImportIo\Endpoints\Extraction;
+use McMatters\ImportIo\Endpoints\Rss;
+use McMatters\ImportIo\Endpoints\Run;
+use McMatters\ImportIo\Endpoints\Schedule;
+use McMatters\ImportIo\Endpoints\Store;
 use McMatters\ImportIo\Utilities\Retry;
 
 use const null;
@@ -61,6 +66,14 @@ class ImportIoClient
     public function api(): Api
     {
         return $this->endpoint(Api::class);
+    }
+
+    /**
+     * @return \McMatters\ImportIo\Endpoints\Billing
+     */
+    public function billing(): Billing
+    {
+        return $this->endpoint(Billing::class);
     }
 
     /**
@@ -122,7 +135,7 @@ class ImportIoClient
             $this->endpoints[$class] = new $class(
                 $this->apiKey,
                 $this->retry,
-                $this->httpClientOptions
+                $this->httpClientOptions,
             );
         }
 

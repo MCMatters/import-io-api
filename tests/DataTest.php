@@ -6,7 +6,8 @@ namespace McMatters\ImportIo\Tests;
 
 use InvalidArgumentException;
 
-use function md5, random_bytes;
+use function md5;
+use function random_bytes;
 
 /**
  * Class DataTest
@@ -16,12 +17,11 @@ use function md5, random_bytes;
 class DataTest extends TestCase
 {
     /**
-     * @throws \InvalidArgumentException
+     * @return void
+     *
      * @throws \Throwable
-     * @throws \PHPUnit\Framework\ExpectationFailedException
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    public function testGetLatestDataJson()
+    public function testGetLatestDataJson(): void
     {
         $data = $this->client->data()->getLatestData($this->extractorId);
 
@@ -29,12 +29,11 @@ class DataTest extends TestCase
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @return void
+     *
      * @throws \Throwable
-     * @throws \PHPUnit\Framework\ExpectationFailedException
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    public function testGetLatestDataCsv()
+    public function testGetLatestDataCsv(): void
     {
         $data = $this->client->data()->getLatestData($this->extractorId, 'csv');
 
@@ -42,10 +41,11 @@ class DataTest extends TestCase
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @return void
+     *
      * @throws \Throwable
      */
-    public function testGetLatestDataWithWrongType()
+    public function testGetLatestDataWithWrongType(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
@@ -53,10 +53,11 @@ class DataTest extends TestCase
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @return void
+     *
      * @throws \Throwable
      */
-    public function testGetLatestDataWithWrongExtractorId()
+    public function testGetLatestDataWithWrongExtractorId(): void
     {
         $this->expectException(InvalidArgumentException::class);
 

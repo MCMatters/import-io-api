@@ -42,4 +42,14 @@ class Api extends Endpoint
     {
         return $this->httpClient->get('maestro/extractor');
     }
+
+    /**
+     * @return array
+     *
+     * @throws \Throwable
+     */
+    public function getCurrentUser(): array
+    {
+        return $this->httpClient->get('auth/currentuser');
+    }
 }

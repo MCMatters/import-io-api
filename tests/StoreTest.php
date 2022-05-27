@@ -17,12 +17,11 @@ use const null;
 class StoreTest extends TestCase
 {
     /**
-     * @throws \InvalidArgumentException
+     * @return void
+     *
      * @throws \Throwable
-     * @throws \PHPUnit\Framework\ExpectationFailedException
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    public function testSearchCrawlRuns()
+    public function testSearchCrawlRuns(): void
     {
         // Without query parameters.
         $data = $this->client->store()->searchCrawlRuns();
@@ -37,7 +36,7 @@ class StoreTest extends TestCase
         // With page and perPage parameters.
         $data = $this->client->store()->searchCrawlRuns(
             null,
-            ['_page' => 1, '_perpage' => 1]
+            ['_page' => 1, '_perpage' => 1],
         );
 
         $this->assertNotEmpty($data);
@@ -45,20 +44,18 @@ class StoreTest extends TestCase
         // With everything except sortBy.
         $data = $this->client->store()->searchCrawlRuns(
             $this->extractorId,
-            ['_page' => 1, '_perpage' => 1]
+            ['_page' => 1, '_perpage' => 1],
         );
 
         $this->assertNotEmpty($data);
     }
 
     /**
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     * @return void
+     *
      * @throws \Throwable
-     * @throws \PHPUnit\Framework\ExpectationFailedException
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    public function testGetCrawlRunProgress()
+    public function testGetCrawlRunProgress(): void
     {
         $crawlRun = $this->getFirstCrawlRun();
 
@@ -69,13 +66,11 @@ class StoreTest extends TestCase
     }
 
     /**
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     * @return void
+     *
      * @throws \Throwable
-     * @throws \PHPUnit\Framework\ExpectationFailedException
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    public function testDownloadFileForCrawlRun()
+    public function testDownloadFileForCrawlRun(): void
     {
         $crawlRun = $this->getFirstCrawlRun();
 
@@ -83,7 +78,7 @@ class StoreTest extends TestCase
             $data = $this->client->store()->downloadFileForCrawlRun(
                 $crawlRun['_id'],
                 $crawlRun['fields'][$type],
-                $type
+                $type,
             );
 
             $this->assertNotEmpty($data);
@@ -91,11 +86,11 @@ class StoreTest extends TestCase
     }
 
     /**
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     * @return void
+     *
      * @throws \Throwable
      */
-    public function testDownloadFileFromCrawlRunWithException()
+    public function testDownloadFileFromCrawlRunWithException(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
@@ -104,40 +99,37 @@ class StoreTest extends TestCase
         $this->client->store()->downloadFileForCrawlRun(
             $crawlRun['_id'],
             $crawlRun['fields']['json'],
-            'html'
+            'html',
         );
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @return void
+     *
      * @throws \Throwable
-     * @throws \PHPUnit\Framework\ExpectationFailedException
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    public function testUploadUrlListForExtractor()
+    public function testUploadUrlListForExtractor(): void
     {
         $data = $this->client->store()->uploadUrlListForExtractor(
             $this->extractorId,
-            ['https://example.com', 'http://example.com']
+            ['https://example.com', 'http://example.com'],
         );
 
         $this->assertNotEmpty($data);
     }
 
     /**
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
+     * @return void
+     *
      * @throws \Throwable
-     * @throws \PHPUnit\Framework\ExpectationFailedException
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    public function testDownloadUrlListFromExtractor()
+    public function testDownloadUrlListFromExtractor(): void
     {
         $crawlRun = $this->getFirstCrawlRun($this->extractorId);
 
         $data = $this->client->store()->downloadUrlListFromExtractor(
             $this->extractorId,
-            $crawlRun['fields']['urlListId']
+            $crawlRun['fields']['urlListId'],
         );
 
         $this->assertNotEmpty($data);
@@ -152,7 +144,7 @@ class StoreTest extends TestCase
      * @throws \RuntimeException
      * @throws \Throwable
      */
-    protected function getFirstCrawlRun(string $extractorId = null): array
+    protected function getFirstCrawlRun(?string $extractorId = null): array
     {
         static $crawlRun;
 

@@ -14,11 +14,11 @@ use Throwable;
 class ScheduleTest extends TestCase
 {
     /**
+     * @return void
+     *
      * @throws \Throwable
-     * @throws \PHPUnit\Framework\ExpectationFailedException
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    public function testList()
+    public function testList(): void
     {
         $data = $this->client->schedule()->list();
 
@@ -26,12 +26,11 @@ class ScheduleTest extends TestCase
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @return void
+     *
      * @throws \Throwable
-     * @throws \PHPUnit\Framework\ExpectationFailedException
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    public function testGetByExtractorIdWithCreating()
+    public function testGetByExtractorIdWithCreating(): void
     {
         // Remove schedule before.
         try {
@@ -50,12 +49,11 @@ class ScheduleTest extends TestCase
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @return void
+     *
      * @throws \Throwable
-     * @throws \PHPUnit\Framework\ExpectationFailedException
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    public function testDelete()
+    public function testDelete(): void
     {
         $code = $this->client->schedule()->delete($this->extractorId);
 
@@ -63,10 +61,11 @@ class ScheduleTest extends TestCase
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @return void
+     *
      * @throws \Throwable
      */
-    public function testDeleteWithException()
+    public function testDeleteWithException(): void
     {
         $this->expectException(Throwable::class);
 

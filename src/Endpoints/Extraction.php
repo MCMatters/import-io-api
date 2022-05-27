@@ -33,7 +33,7 @@ class Extraction extends Endpoint
 
         return $this->httpClient->get(
             "extractor/{$extractorId}",
-            ['url' => $url]
+            ['url' => $url],
         );
     }
 }

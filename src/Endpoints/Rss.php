@@ -36,7 +36,7 @@ class Rss extends Endpoint
         return $this->httpClient->get(
             "extractor/{$extractorId}/runs",
             [],
-            'xml'
+            'xml',
         );
     }
 
