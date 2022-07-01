@@ -252,7 +252,7 @@ class Store extends Endpoint
      */
     public function getAllCrawlRuns(string $extractorId, array $filters = []): array
     {
-        return $this->getAllEntities('searchCrawlRuns', [$extractorId, $filters]);
+        return $this->getAllEntities('searchCrawlRuns', [$extractorId], $filters);
     }
 
     /**
@@ -268,13 +268,27 @@ class Store extends Endpoint
         string $extractorId,
         bool $flatten = true
     ): array {
-        $crawlRuns = $this->getAllCrawlRuns($extractorId, [
-            'state' => self::STATE_FINISHED,
-        ]);
+        $crawlRuns = $this->getAllCrawlRuns($extractorId);
 
         $data = [];
 
         foreach ($crawlRuns as $crawlRun) {
+            $failedCount = $crawlRun['fields']['failedUrlCount'] ?? 0;
+            $totalCount = $crawlRun['fields']['totalUrlCount'] ?? 0;
+            $successCount = $crawlRun['fields']['successUrlCount'] ?? 0;
+
+            if ($failedCount === $totalCount) {
+                continue;
+            }
+
+            if (($crawlRun['fields']['rowCount'] ?? 0) === 0) {
+                continue;
+            }
+
+            if ($totalCount !== ($successCount + $failedCount)) {
+                continue;
+            }
+
             $data[] = $this->downloadFileForCrawlRun(
                 $crawlRun['_id'],
                 $crawlRun['fields']['json'],

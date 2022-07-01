@@ -35,7 +35,7 @@ abstract class Endpoint
      */
     public function __construct(
         string $apiKey,
-        Retry $retry = null,
+        ?Retry $retry = null,
         array $httpClientOptions = []
     ) {
         $this->httpClient = new Client(
