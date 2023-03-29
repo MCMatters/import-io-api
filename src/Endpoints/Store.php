@@ -130,11 +130,13 @@ class Store extends Endpoint
     }
 
     /**
+     * @param array $args
+     *
      * @return array
      */
-    public function getAllExtractors(): array
+    public function getAllExtractors(array $args = []): array
     {
-        return $this->getAllEntities('searchExtractors', [], [
+        return $this->getAllEntities('searchExtractors', $args, [
             'q' => '_missing_:archived OR archived:false',
         ]);
     }
