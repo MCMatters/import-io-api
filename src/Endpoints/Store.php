@@ -62,8 +62,8 @@ class Store extends Endpoint
         }
 
         return $this->httpClient->get(
-            'crawlrun/_search',
-            array_filter(['extractorId' => $extractorId] + $filters),
+            'crawlrun/_query',
+            array_filter(['f_extractorId' => $extractorId] + $filters),
         );
     }
 
@@ -85,14 +85,8 @@ class Store extends Endpoint
             ['_page' => 1, '_perpage' => 1] + $filters,
         );
 
-        if (empty($crawlRuns['hits']['hits'])) {
-            return [];
-        }
-
-        foreach ($crawlRuns['hits']['hits'] as $hit) {
-            if ($hit['_type'] === 'CrawlRun') {
-                return $hit;
-            }
+        foreach ($crawlRuns as $crawlRun) {
+            return $crawlRun;
         }
 
         return [];
@@ -112,6 +106,7 @@ class Store extends Endpoint
             $extractorId,
             [
                 '_sort' => '_meta.creationTimestamp',
+                '_sortDirection' => 'DESC',
                 'state' => self::STATE_FINISHED,
             ],
         );
@@ -126,7 +121,7 @@ class Store extends Endpoint
      */
     public function searchExtractors(array $filters = []): array
     {
-        return $this->httpClient->get('store/extractor/_search', $filters);
+        return $this->httpClient->get('store/extractor/_query', $filters);
     }
 
     /**
@@ -275,15 +270,15 @@ class Store extends Endpoint
         $data = [];
 
         foreach ($crawlRuns as $crawlRun) {
-            $failedCount = $crawlRun['fields']['failedUrlCount'] ?? 0;
-            $totalCount = $crawlRun['fields']['totalUrlCount'] ?? 0;
-            $successCount = $crawlRun['fields']['successUrlCount'] ?? 0;
+            $failedCount = $crawlRun['failedUrlCount'] ?? 0;
+            $totalCount = $crawlRun['totalUrlCount'] ?? 0;
+            $successCount = $crawlRun['successUrlCount'] ?? 0;
 
             if ($failedCount === $totalCount) {
                 continue;
             }
 
-            if (($crawlRun['fields']['rowCount'] ?? 0) === 0) {
+            if (($crawlRun['rowCount'] ?? 0) === 0) {
                 continue;
             }
 
@@ -292,8 +287,8 @@ class Store extends Endpoint
             }
 
             $data[] = $this->downloadFileForCrawlRun(
-                $crawlRun['_id'],
-                $crawlRun['fields']['json'],
+                $crawlRun['guid'],
+                $crawlRun['json'],
             );
         }
 
@@ -327,21 +322,21 @@ class Store extends Endpoint
         $reports = [];
 
         foreach ($this->getAllReportRunsForExtractor($extractorId) as $reportRun) {
-            if (!isset($reportRun['fields']['reportId'])) {
+            if (!isset($reportRun['reportId'])) {
                 continue;
             }
 
-            $timestamp = $reportRun['fields']['_meta']['creationTimestamp'];
+            $timestamp = $reportRun['_meta']['creationTimestamp'];
 
-            if (!isset($reports[$reportRun['fields']['reportId']])) {
-                $reports[$reportRun['fields']['reportId']] = [
-                    'name' => $reportRun['fields']['name'],
-                    'token' => $reportRun['fields']['reportId'],
-                    'configId' => $reportRun['fields']['configId'],
+            if (!isset($reports[$reportRun['reportId']])) {
+                $reports[$reportRun['reportId']] = [
+                    'name' => $reportRun['name'],
+                    'token' => $reportRun['reportId'],
+                    'configId' => $reportRun['configId'],
                     'timestamp' => $timestamp,
                 ];
-            } elseif ($timestamp > $reports[$reportRun['fields']['reportId']]['timestamp']) {
-                $reports[$reportRun['fields']['reportId']]['timestamp'] = $timestamp;
+            } elseif ($timestamp > $reports[$reportRun['reportId']]['timestamp']) {
+                $reports[$reportRun['reportId']]['timestamp'] = $timestamp;
             }
         }
 
@@ -411,8 +406,8 @@ class Store extends Endpoint
         }
 
         return $this->httpClient->get(
-            'reportRun/_search',
-            array_filter(['reportId' => $reportId] + $filters),
+            'reportRun/_query',
+            array_filter(['f_reportId' => $reportId] + $filters),
         );
     }
 
@@ -434,14 +429,8 @@ class Store extends Endpoint
             ['_page' => 1, '_perpage' => 1] + $filters,
         );
 
-        if (empty($reportRuns['hits']['hits'])) {
-            return [];
-        }
-
-        foreach ($reportRuns['hits']['hits'] as $hit) {
-            if ($hit['_type'] === 'ReportRun') {
-                return $hit;
-            }
+        foreach ($reportRuns as $reportRun) {
+            return $reportRun;
         }
 
         return [];
@@ -461,6 +450,7 @@ class Store extends Endpoint
             $reportId,
             [
                 '_sort' => '_meta.creationTimestamp',
+                '_sortDirection' => 'DESC',
                 'status' => self::STATE_FINISHED,
             ],
         );
@@ -508,7 +498,7 @@ class Store extends Endpoint
     ): array {
         try {
             return $this->getAllReportRuns([
-                'q' => "extractorId:{$extractorId}",
+                'f_extractorId' => $extractorId,
             ]);
         } catch (Throwable $e) {
             if ($attempts > 3) {
@@ -628,7 +618,6 @@ class Store extends Endpoint
      * @param string $method
      * @param array $args
      * @param array $filters
-     * @param int|null $remaining
      * @param bool $oldest
      *
      * @return array
@@ -637,13 +626,13 @@ class Store extends Endpoint
         string $method,
         array $args = [],
         array $filters = [],
-        int $remaining = null,
         bool $oldest = true
     ): array {
         $page = 1;
         $items = [];
-        $processed = 0;
-        $maxPages = 0;
+
+        $lastGuid = null;
+        $guid = null;
 
         do {
             $arguments = array_merge(
@@ -651,7 +640,7 @@ class Store extends Endpoint
                 [
                     $filters + [
                         '_page' => $page,
-                        '_perpage' => min($remaining ?? self::LIMIT_COUNT, self::LIMIT_COUNT),
+                        '_perpage' => self::LIMIT_COUNT,
                         '_sort' => '_meta.creationTimestamp',
                         '_mine' => 'true',
                         '_sortDirection' => $oldest ? 'DESC' : 'ASC',
@@ -661,42 +650,21 @@ class Store extends Endpoint
 
             $content = $this->$method(...$arguments);
 
-            $countItems = count($content['hits']['hits']);
+            $countItems = count($content);
 
             if ($countItems > 0) {
-                $items[] = $content['hits']['hits'];
+                $items[] = $content;
+                $guid = $content[$countItems - 1]['guid'] ?? null;
             }
 
-            $processed += $countItems;
-
-            if ($page === 1 && $processed) {
-                $maxPages = (int) ceil($content['hits']['total'] / $processed);
-            }
-
-            if (null !== $remaining) {
-                $remaining -= $countItems;
+            if ($guid !== $lastGuid) {
+                $lastGuid = $guid;
+            } else {
+                break;
             }
 
             $page++;
-        } while (
-            $content['hits']['total'] > 0 &&
-            ($content['hits']['total'] > $processed && $page <= self::LIMIT_PAGE) &&
-            ($remaining || null === $remaining)
-        );
-
-        if ($maxPages > self::LIMIT_PAGE && null === $remaining) {
-            return array_merge(
-                [],
-                $this->getAllEntities(
-                    $method,
-                    $args,
-                    $filters,
-                    $content['hits']['total'] - $processed,
-                    false,
-                ),
-                ...$items,
-            );
-        }
+        } while ($countItems === self::LIMIT_COUNT);
 
         return array_merge([], ...$items);
     }
