@@ -9,14 +9,11 @@ use Throwable;
 
 use function array_filter;
 use function array_merge;
-use function ceil;
 use function count;
 use function implode;
 use function json_decode;
-use function min;
 use function uasort;
 
-use const false;
 use const null;
 use const true;
 
