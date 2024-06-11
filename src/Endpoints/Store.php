@@ -169,7 +169,6 @@ class Store extends Endpoint
         return $this->httpClient->get("report/{$reportId}");
     }
 
-    // todo
     public function getLastReportForExtractor(string $extractorId): array
     {
         $reports = [];
@@ -193,11 +192,13 @@ class Store extends Endpoint
             }
         }
 
-        uasort($reports, static function ($a, $b) {
-            return $b['timestamp'] <=> $a['timestamp'];
-        });
+        uasort($reports, static fn ($a, $b) => $b['timestamp'] <=> $a['timestamp']);
 
-        return $reports[0] ?? [];
+        foreach ($reports as $report) {
+            return $report;
+        }
+
+        return [];
     }
 
     public function createReport(
