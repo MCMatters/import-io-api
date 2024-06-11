@@ -11,31 +11,13 @@ use function getenv;
 
 use const null;
 
-/**
- * Class TestCase
- *
- * @package McMatters\ImportIo\Tests
- */
 class TestCase extends BaseTestCase
 {
-    /**
-     * @var \McMatters\ImportIo\ImportIoClient
-     */
-    protected $client;
+    protected ImportIoClient $client;
 
-    /**
-     * @var string
-     */
-    protected $extractorId;
+    protected string $extractorId;
 
-    /**
-     * TestCase constructor.
-     *
-     * @param string|null $name
-     * @param array $data
-     * @param string $dataName
-     */
-    public function __construct(string $name = null, array $data = [], string $dataName = '')
+    public function __construct(?string $name = null, array $data = [], string $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
 

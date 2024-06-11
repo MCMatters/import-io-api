@@ -9,18 +9,8 @@ use InvalidArgumentException;
 use function md5;
 use function random_bytes;
 
-/**
- * Class DataTest
- *
- * @package McMatters\ImportIo\Tests
- */
 class DataTest extends TestCase
 {
-    /**
-     * @return void
-     *
-     * @throws \Throwable
-     */
     public function testGetLatestDataJson(): void
     {
         $data = $this->client->data()->getLatestData($this->extractorId);
@@ -28,11 +18,6 @@ class DataTest extends TestCase
         $this->assertNotEmpty($data);
     }
 
-    /**
-     * @return void
-     *
-     * @throws \Throwable
-     */
     public function testGetLatestDataCsv(): void
     {
         $data = $this->client->data()->getLatestData($this->extractorId, 'csv');
@@ -40,11 +25,6 @@ class DataTest extends TestCase
         $this->assertNotEmpty($data);
     }
 
-    /**
-     * @return void
-     *
-     * @throws \Throwable
-     */
     public function testGetLatestDataWithWrongType(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -52,11 +32,6 @@ class DataTest extends TestCase
         $this->client->data()->getLatestData($this->extractorId, 'xls');
     }
 
-    /**
-     * @return void
-     *
-     * @throws \Throwable
-     */
     public function testGetLatestDataWithWrongExtractorId(): void
     {
         $this->expectException(InvalidArgumentException::class);

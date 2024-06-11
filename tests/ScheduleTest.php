@@ -6,18 +6,8 @@ namespace McMatters\ImportIo\Tests;
 
 use Throwable;
 
-/**
- * Class ScheduleTest
- *
- * @package McMatters\ImportIo\Tests
- */
 class ScheduleTest extends TestCase
 {
-    /**
-     * @return void
-     *
-     * @throws \Throwable
-     */
     public function testList(): void
     {
         $data = $this->client->schedule()->list();
@@ -25,17 +15,12 @@ class ScheduleTest extends TestCase
         $this->assertNotEmpty($data);
     }
 
-    /**
-     * @return void
-     *
-     * @throws \Throwable
-     */
     public function testGetByExtractorIdWithCreating(): void
     {
         // Remove schedule before.
         try {
             $this->client->schedule()->delete($this->extractorId);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             //
         }
 
@@ -48,11 +33,6 @@ class ScheduleTest extends TestCase
         $this->assertSame($interval, $data['interval']);
     }
 
-    /**
-     * @return void
-     *
-     * @throws \Throwable
-     */
     public function testDelete(): void
     {
         $code = $this->client->schedule()->delete($this->extractorId);
@@ -60,11 +40,6 @@ class ScheduleTest extends TestCase
         $this->assertSame(200, $code);
     }
 
-    /**
-     * @return void
-     *
-     * @throws \Throwable
-     */
     public function testDeleteWithException(): void
     {
         $this->expectException(Throwable::class);

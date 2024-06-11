@@ -6,46 +6,18 @@ namespace McMatters\ImportIo\Utilities;
 
 use Throwable;
 
-use function sleep;
+use function usleep;
 
 use const null;
 
-/**
- * Class Retry
- *
- * @package McMatters\ImportIo\Utilities
- */
 class Retry
 {
-    /**
-     * @var int
-     */
-    protected $attempts;
-
-    /**
-     * @var int
-     */
-    protected $sleep;
-
-    /**
-     * Retry constructor.
-     *
-     * @param int $attempts
-     * @param int $sleep
-     */
-    public function __construct(int $attempts, int $sleep = 0)
-    {
-        $this->attempts = $attempts;
-        $this->sleep = $sleep;
+    public function __construct(
+        protected int $attempts,
+        protected int $sleepMilliseconds = 0,
+    ) {
     }
 
-    /**
-     * @param callable $callback
-     *
-     * @return mixed
-     *
-     * @throws \Throwable
-     */
     public function run(callable $callback)
     {
         $attempts = $this->attempts;
@@ -60,8 +32,8 @@ class Retry
                     throw $e;
                 }
 
-                if ($this->sleep) {
-                    sleep($this->sleep);
+                if ($this->sleepMilliseconds) {
+                    usleep($this->sleepMilliseconds * 1000);
                 }
             }
         } while ($attempts > 0);

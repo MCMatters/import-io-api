@@ -9,18 +9,8 @@ use RuntimeException;
 
 use const null;
 
-/**
- * Class StoreTest
- *
- * @package McMatters\ImportIo\Tests
- */
 class StoreTest extends TestCase
 {
-    /**
-     * @return void
-     *
-     * @throws \Throwable
-     */
     public function testSearchCrawlRuns(): void
     {
         // Without query parameters.
@@ -50,11 +40,6 @@ class StoreTest extends TestCase
         $this->assertNotEmpty($data);
     }
 
-    /**
-     * @return void
-     *
-     * @throws \Throwable
-     */
     public function testGetCrawlRunProgress(): void
     {
         $crawlRun = $this->getFirstCrawlRun();
@@ -65,11 +50,6 @@ class StoreTest extends TestCase
         $this->assertSame($crawlRun['_id'], $data['guid']);
     }
 
-    /**
-     * @return void
-     *
-     * @throws \Throwable
-     */
     public function testDownloadFileForCrawlRun(): void
     {
         $crawlRun = $this->getFirstCrawlRun();
@@ -85,11 +65,6 @@ class StoreTest extends TestCase
         }
     }
 
-    /**
-     * @return void
-     *
-     * @throws \Throwable
-     */
     public function testDownloadFileFromCrawlRunWithException(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -103,11 +78,6 @@ class StoreTest extends TestCase
         );
     }
 
-    /**
-     * @return void
-     *
-     * @throws \Throwable
-     */
     public function testUploadUrlListForExtractor(): void
     {
         $data = $this->client->store()->uploadUrlListForExtractor(
@@ -118,11 +88,6 @@ class StoreTest extends TestCase
         $this->assertNotEmpty($data);
     }
 
-    /**
-     * @return void
-     *
-     * @throws \Throwable
-     */
     public function testDownloadUrlListFromExtractor(): void
     {
         $crawlRun = $this->getFirstCrawlRun($this->extractorId);
@@ -135,15 +100,6 @@ class StoreTest extends TestCase
         $this->assertNotEmpty($data);
     }
 
-    /**
-     * @param string|null $extractorId
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
-     * @throws \Throwable
-     */
     protected function getFirstCrawlRun(?string $extractorId = null): array
     {
         static $crawlRun;
@@ -155,7 +111,7 @@ class StoreTest extends TestCase
         $crawlRun = $this->client->store()->getFirstCrawlRun($extractorId);
 
         if (empty($crawlRun)) {
-            throw new RuntimeException('There is no crawlRuns');
+            throw new RuntimeException('There are no crawlRuns');
         }
 
         return $crawlRun;

@@ -4,35 +4,16 @@ declare(strict_types=1);
 
 namespace McMatters\ImportIo\Endpoints;
 
-use McMatters\ImportIo\Helpers\Validation;
 use Throwable;
 
 use const null;
 
-/**
- * Class Rss
- *
- * @package McMatters\ImportIo\Endpoints
- */
 class Rss extends Endpoint
 {
-    /**
-     * @var string
-     */
-    protected $subDomain = 'rss';
+    protected string $subDomain = 'rss';
 
-    /**
-     * @param string $extractorId
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function getRuns(string $extractorId): array
     {
-        Validation::checkExtractorId($extractorId);
-
         return $this->httpClient->get(
             "extractor/{$extractorId}/runs",
             [],
@@ -40,14 +21,6 @@ class Rss extends Endpoint
         );
     }
 
-    /**
-     * @param string $extractorId
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function getRunsGuids(string $extractorId): array
     {
         $guids = [];
@@ -55,13 +28,17 @@ class Rss extends Endpoint
         $data = $this->getRuns($extractorId);
 
         try {
-            $items = ((array) $data['channel'])['item'] ?? [];
+            $data = (array) $data['channel'];
+
+            $items = $data['item'] ?? [];
         } catch (Throwable $e) {
             $items = [];
         }
 
         foreach ($items as $item) {
-            if ($guid = ((array) $item)['guid'] ?? null) {
+            $item = (array) $item;
+
+            if ($guid = ($item['guid'] ?? null)) {
                 $guids[] = $guid;
             }
         }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace McMatters\ImportIo\Endpoints;
 
-use McMatters\ImportIo\Helpers\Validation;
 use Throwable;
 
 use function array_filter;
@@ -14,14 +13,10 @@ use function implode;
 use function json_decode;
 use function uasort;
 
+use const JSON_THROW_ON_ERROR;
 use const null;
 use const true;
 
-/**
- * Class Store
- *
- * @package McMatters\ImportIo\Endpoints
- */
 class Store extends Endpoint
 {
     public const STATE_PENDING = 'PENDING';
@@ -36,68 +31,31 @@ class Store extends Endpoint
     public const LIMIT_PAGE = 15;
     public const LIMIT_COUNT = 1000;
 
-    /**
-     * @var string
-     */
-    protected $subDomain = 'store';
+    protected string $subDomain = 'store';
 
-    /**
-     * @param string|null $extractorId
-     * @param array $filters
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function searchCrawlRuns(
-        string $extractorId = null,
-        array $filters = []
+        ?string $extractorId = null,
+        array $filters = [],
     ): array {
-        if (null !== $extractorId) {
-            Validation::checkExtractorId($extractorId);
-        }
-
         return $this->httpClient->get(
             'crawlrun/_query',
             array_filter(['f_extractorId' => $extractorId] + $filters),
         );
     }
 
-    /**
-     * @param string|null $extractorId
-     * @param array $filters
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function getFirstCrawlRun(
-        string $extractorId = null,
-        array $filters = []
+        ?string $extractorId = null,
+        array $filters = [],
     ): array {
         $crawlRuns = $this->searchCrawlRuns(
             $extractorId,
             ['_page' => 1, '_perpage' => 1] + $filters,
         );
 
-        foreach ($crawlRuns as $crawlRun) {
-            return $crawlRun;
-        }
-
-        return [];
+        return $crawlRuns[0] ?? [];
     }
 
-    /**
-     * @param string|null $extractorId
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
-    public function getLastFinishedCrawlRun(string $extractorId = null): array
+    public function getLastFinishedCrawlRun(?string $extractorId = null): array
     {
         return $this->getFirstCrawlRun(
             $extractorId,
@@ -109,23 +67,11 @@ class Store extends Endpoint
         );
     }
 
-    /**
-     * @param array $filters
-     *
-     * @return array
-     *
-     * @throws \Throwable
-     */
     public function searchExtractors(array $filters = []): array
     {
         return $this->httpClient->get('store/extractor/_query', $filters);
     }
 
-    /**
-     * @param array $args
-     *
-     * @return array
-     */
     public function getAllExtractors(array $args = []): array
     {
         return $this->getAllEntities('searchExtractors', $args, [
@@ -133,55 +79,21 @@ class Store extends Endpoint
         ]);
     }
 
-    /**
-     * @param string $extractorId
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function getExtractorInfo(string $extractorId): array
     {
-        Validation::checkExtractorId($extractorId);
-
         return $this->httpClient->get("store/extractor/{$extractorId}");
     }
 
-    /**
-     * @param string $crawlRunId
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function getCrawlRunProgress(string $crawlRunId): array
     {
-        Validation::checkCrawlRunId($crawlRunId);
-
         return $this->httpClient->get("crawlrun/{$crawlRunId}");
     }
 
-    /**
-     * @param string $crawlRunId
-     * @param string $attachmentId
-     * @param string $type
-     *
-     * @return array|string
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function downloadFileForCrawlRun(
         string $crawlRunId,
         string $attachmentId,
-        string $type = 'json'
-    ) {
-        Validation::checkCrawlRunId($crawlRunId);
-        Validation::checkAttachmentId($attachmentId);
-        Validation::checkDownloadableCrawlRunType($type);
-
+        string $type = 'json',
+    ): array|string {
         return $this->httpClient->get(
             "crawlRun/{$crawlRunId}/_attachment/{$type}/{$attachmentId}",
             [],
@@ -189,46 +101,23 @@ class Store extends Endpoint
         );
     }
 
-    /**
-     * @param string $extractorId
-     * @param array $urlList
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function uploadUrlListForExtractor(
         string $extractorId,
-        array $urlList
+        array $urlList,
     ): array {
-        Validation::checkExtractorId($extractorId);
-
         $data = $this->httpClient->put(
             "extractor/{$extractorId}/_attachment/urlList",
             implode("\n", $urlList),
             'plain',
         );
 
-        return json_decode($data, true);
+        return json_decode($data, true, 512, JSON_THROW_ON_ERROR);
     }
 
-    /**
-     * @param string $extractorId
-     * @param string $attachmentId
-     *
-     * @return array|string
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function downloadUrlListFromExtractor(
         string $extractorId,
-        string $attachmentId
-    ) {
-        Validation::checkExtractorId($extractorId);
-        Validation::checkAttachmentId($attachmentId);
-
+        string $attachmentId,
+    ): array|string {
         return $this->httpClient->get(
             "extractor/{$extractorId}/_attachment/urlList/{$attachmentId}",
             [],
@@ -236,31 +125,14 @@ class Store extends Endpoint
         );
     }
 
-    /**
-     * @param string $extractorId
-     * @param array $filters
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     */
     public function getAllCrawlRuns(string $extractorId, array $filters = []): array
     {
         return $this->getAllEntities('searchCrawlRuns', [$extractorId], $filters);
     }
 
-    /**
-     * @param string $extractorId
-     * @param bool $flatten
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function getAllDataFromCrawlRuns(
         string $extractorId,
-        bool $flatten = true
+        bool $flatten = true,
     ): array {
         $crawlRuns = $this->getAllCrawlRuns($extractorId);
 
@@ -292,28 +164,12 @@ class Store extends Endpoint
         return $flatten ? array_merge([], ...$data) : $data;
     }
 
-    /**
-     * @param string $reportId
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function getReport(string $reportId): array
     {
-        Validation::checkReportId($reportId);
-
         return $this->httpClient->get("report/{$reportId}");
     }
 
-    /**
-     * @param string $extractorId
-     *
-     * @return array
-     *
-     * @throws \Throwable
-     */
+    // todo
     public function getLastReportForExtractor(string $extractorId): array
     {
         $reports = [];
@@ -341,32 +197,15 @@ class Store extends Endpoint
             return $b['timestamp'] <=> $a['timestamp'];
         });
 
-        foreach ($reports as $report) {
-            return $report;
-        }
-
-        return [];
+        return $reports[0] ?? [];
     }
 
-    /**
-     * @param string $extractorId
-     * @param string $name
-     * @param array $primaryKey
-     * @param array $columns
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function createReport(
         string $extractorId,
         string $name,
         array $primaryKey,
-        array $columns = []
+        array $columns = [],
     ): array {
-        Validation::checkExtractorId($extractorId);
-
         $report = $this->httpClient->post('store/report', [
             'type' => 'CRAWL_DIFF',
             'name' => $name,
@@ -385,40 +224,18 @@ class Store extends Endpoint
         return $report;
     }
 
-    /**
-     * @param string|null $reportId
-     * @param array $filters
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function searchReportRuns(
-        string $reportId = null,
-        array $filters = []
+        ?string $reportId = null,
+        array $filters = [],
     ): array {
-        if (null !== $reportId) {
-            Validation::checkReportId($reportId);
-        }
-
         return $this->httpClient->get(
             'reportRun/_query',
             array_filter(['f_reportId' => $reportId] + $filters),
         );
     }
 
-    /**
-     * @param string|null $reportId
-     * @param array $filters
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function getFirstReportRun(
-        string $reportId = null,
+        ?string $reportId = null,
         array $filters = []
     ): array {
         $reportRuns = $this->searchReportRuns(
@@ -426,22 +243,10 @@ class Store extends Endpoint
             ['_page' => 1, '_perpage' => 1] + $filters,
         );
 
-        foreach ($reportRuns as $reportRun) {
-            return $reportRun;
-        }
-
-        return [];
+        return $reportRuns[0] ?? [];
     }
 
-    /**
-     * @param string|null $reportId
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
-    public function getLastFinishedReportRun(string $reportId = null): array
+    public function getLastFinishedReportRun(?string $reportId = null): array
     {
         return $this->getFirstReportRun(
             $reportId,
@@ -453,45 +258,25 @@ class Store extends Endpoint
         );
     }
 
-    /**
-     * @param int $timestamp
-     * @param string|null $reportId
-     *
-     * @return array
-     */
     public function getFinishedReportRunsAfter(
         int $timestamp,
-        string $reportId = null
+        ?string $reportId = null,
     ): array {
         $filters = ['q' => "timestamp:>{$timestamp}"];
 
         return $this->getAllReportRuns($filters, $reportId);
     }
 
-    /**
-     * @param array $filters
-     * @param string|null $reportId
-     *
-     * @return array
-     */
     public function getAllReportRuns(
         array $filters = [],
-        string $reportId = null
+        ?string $reportId = null,
     ): array {
         return $this->getAllEntities('searchReportRuns', [$reportId], $filters);
     }
 
-    /**
-     * @param string $extractorId
-     * @param int $attempts
-     *
-     * @return array
-     *
-     * @throws \Throwable
-     */
     public function getAllReportRunsForExtractor(
         string $extractorId,
-        int $attempts = 0
+        int $attempts = 0,
     ): array {
         try {
             return $this->getAllReportRuns([
@@ -506,64 +291,28 @@ class Store extends Endpoint
         }
     }
 
-    /**
-     * @param string $reportRunId
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function getReportRun(string $reportRunId): array
     {
-        Validation::checkReportRunId($reportRunId);
-
         return $this->httpClient->get("reportRun/{$reportRunId}");
     }
 
-    /**
-     * @param string $reportRunId
-     * @param string $attachmentId
-     * @param string $type
-     *
-     * @return array|string
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function downloadFileForReportRun(
         string $reportRunId,
         string $attachmentId,
-        string $type = 'json'
-    ) {
-        Validation::checkReportRunId($reportRunId);
-        Validation::checkAttachmentId($attachmentId);
-        Validation::checkDownloadableReportRunType($type);
-
+        string $type = 'json',
+    ): array|string {
         return $this->httpClient->get(
             "reportRun/{$reportRunId}/_attachment/{$type}/{$attachmentId}",
             [],
-            $type === 'json' ? 'jsonl' : 'plain',
+            'json' === $type ? 'jsonl' : 'plain',
         );
     }
 
-    /**
-     * @param string $extractorId
-     * @param string $url
-     * @param array $headers
-     *
-     * @return array|string
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function addWebhookUrlToExtractor(
         string $extractorId,
         string $url,
-        array $headers = []
-    ) {
-        Validation::checkExtractorId($extractorId);
-
+        array $headers = [],
+    ): array|string {
         return $this->httpClient->patch(
             "store/extractor/{$extractorId}",
             [
@@ -577,53 +326,24 @@ class Store extends Endpoint
         );
     }
 
-    /**
-     * @param string $configId
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function getRuntimeConfiguration(string $configId): array
     {
-        Validation::checkUuid($configId, 'configId');
-
         return $this->httpClient->get("store/runtimeconfiguration/{$configId}");
     }
 
-    /**
-     * @param string $extractorId
-     * @param array $body
-     *
-     * @return array
-     *
-     * @throws \InvalidArgumentException
-     * @throws \Throwable
-     */
     public function updateExtractor(string $extractorId, array $body): array
     {
-        Validation::checkExtractorId($extractorId);
-
         return $this->httpClient->patch(
             "store/extractor/{$extractorId}",
             $body,
         );
     }
 
-    /**
-     * @param string $method
-     * @param array $args
-     * @param array $filters
-     * @param bool $oldest
-     *
-     * @return array
-     */
     protected function getAllEntities(
         string $method,
         array $args = [],
         array $filters = [],
-        bool $oldest = true
+        bool $oldest = true,
     ): array {
         $page = 1;
         $items = [];
@@ -666,33 +386,15 @@ class Store extends Endpoint
         return array_merge([], ...$items);
     }
 
-    /**
-     * @param string $type
-     *
-     * @return string
-     */
     protected function getAcceptDownloadType(string $type = 'json'): string
     {
-        switch ($type) {
-            case 'csv':
-            case 'log':
-                return 'csv';
-
-            case 'sample':
-                return 'json';
-
-            case 'files':
-                return 'zip';
-
-            case 'pdf':
-                return 'pdf';
-
-            case 'xlsx':
-                return 'xslx';
-
-            case 'json':
-            default:
-                return 'jsonl';
-        }
+        return match ($type) {
+            'csv', 'log' => 'csv',
+            'sample' => 'json',
+            'files' => 'zip',
+            'pdf' => 'pdf',
+            'xlsx' => 'xslx',
+            default => 'jsonl',
+        };
     }
 }

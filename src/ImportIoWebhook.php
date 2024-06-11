@@ -6,35 +6,23 @@ namespace McMatters\ImportIo;
 
 use InvalidArgumentException;
 
+use McMatters\ImportIo\Endpoints\Store;
+
 use function is_array;
 use function is_string;
 use function json_decode;
 
+use const JSON_THROW_ON_ERROR;
 use const true;
 
-/**
- * Class ImportIoWebhook
- *
- * @package McMatters\ImportIo
- */
 class ImportIoWebhook
 {
-    /**
-     * @var array
-     */
-    protected $data;
+    protected array $data;
 
-    /**
-     * ImportIoWebhook constructor.
-     *
-     * @param array|string $data
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function __construct($data)
+    public function __construct(array|string $data)
     {
         if (is_string($data)) {
-            $data = json_decode($data, true);
+            $data = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
         }
 
         if (!is_array($data)) {
@@ -44,65 +32,41 @@ class ImportIoWebhook
         $this->data = $data;
     }
 
-    /**
-     * @return string
-     */
     public function getState(): string
     {
         return $this->data['state'];
     }
 
-    /**
-     * @return bool
-     */
     public function isFinished(): bool
     {
-        return $this->getState() === 'FINISHED';
+        return $this->getState() === Store::STATE_FINISHED;
     }
 
-    /**
-     * @return int
-     */
     public function getRowCount(): int
     {
         return (int) ($this->data['rowCount'] ?? 0);
     }
 
-    /**
-     * @return int
-     */
     public function getTotalUrlCount(): int
     {
         return (int) ($this->data['totalUrlCount'] ?? 0);
     }
 
-    /**
-     * @return int
-     */
     public function getSuccessUrlCount(): int
     {
         return (int) ($this->data['successUrlCount'] ?? 0);
     }
 
-    /**
-     * @return int
-     */
     public function getFailureUrlCount(): int
     {
         return (int) ($this->data['failureUrlCount'] ?? 0);
     }
 
-    /**
-     * @return string
-     */
     public function getExtractorId(): string
     {
         return $this->data['extractorId'];
     }
 
-    /**
-     * @return array
-     */
     public function raw(): array
     {
         return $this->data;

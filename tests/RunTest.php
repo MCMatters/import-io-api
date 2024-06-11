@@ -6,11 +6,6 @@ namespace McMatters\ImportIo\Tests;
 
 use Throwable;
 
-/**
- * Class RunTest
- *
- * @package McMatters\ImportIo\Tests
- */
 class RunTest extends TestCase
 {
     /**
@@ -20,16 +15,11 @@ class RunTest extends TestCase
     {
         try {
             $this->client->run()->cancelCrawl($this->extractorId);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             // There is no ran crawl.
         }
     }
 
-    /**
-     * @return void
-     *
-     * @throws \Throwable
-     */
     public function testStartAndCancelCrawl(): void
     {
         $startCrawlId = $this->client->run()->startCrawl($this->extractorId);
@@ -40,11 +30,6 @@ class RunTest extends TestCase
         $this->assertSame($startCrawlId, $cancelCrawlId);
     }
 
-    /**
-     * @return void
-     *
-     * @throws \Throwable
-     */
     public function testStartCrawlException(): void
     {
         $this->expectException(Throwable::class);
@@ -54,11 +39,6 @@ class RunTest extends TestCase
         $this->client->run()->cancelCrawl($this->extractorId);
     }
 
-    /**
-     * @return void
-     *
-     * @throws \Throwable
-     */
     public function testCancelCrawlException(): void
     {
         $this->expectException(Throwable::class);
