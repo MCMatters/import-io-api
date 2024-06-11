@@ -19,7 +19,7 @@ use const true;
 
 class Client
 {
-    protected Client $httpClient;
+    protected HttpClient $httpClient;
 
     public function __construct(
         string $subDomain,
