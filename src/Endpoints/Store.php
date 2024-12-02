@@ -60,7 +60,7 @@ class Store extends Endpoint
         return $this->getFirstCrawlRun(
             $extractorId,
             [
-                '_sort' => '_meta.creationTimestamp',
+                '_sort' => 'meta_created_at',
                 '_sortDirection' => 'DESC',
                 'state' => self::STATE_FINISHED,
             ],
@@ -252,7 +252,7 @@ class Store extends Endpoint
         return $this->getFirstReportRun(
             $reportId,
             [
-                '_sort' => '_meta.creationTimestamp',
+                '_sort' => 'meta_created_at',
                 '_sortDirection' => 'DESC',
                 'status' => self::STATE_FINISHED,
             ],
@@ -359,8 +359,8 @@ class Store extends Endpoint
                     $filters + [
                         '_page' => $page,
                         '_perpage' => self::LIMIT_COUNT,
-                        '_sort' => '_meta.creationTimestamp',
                         '_mine' => 'true',
+                        '_sort' => 'meta_created_at',
                         '_sortDirection' => $oldest ? 'DESC' : 'ASC',
                     ],
                 ],
@@ -371,11 +371,12 @@ class Store extends Endpoint
             $countItems = count($content);
 
             if ($countItems > 0) {
-                $items[] = $content;
                 $guid = $content[$countItems - 1]['guid'] ?? null;
             }
 
             if ($guid !== $lastGuid) {
+                $items[] = $content;
+
                 $lastGuid = $guid;
             } else {
                 break;
